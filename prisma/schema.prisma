@@ -8,6 +8,14 @@ datasource db {
   // No se pone "url" aquí — se configura en prisma.config.ts
 }
 
+enum FlowLevel {
+  NONE
+  SPOTTING
+  LIGHT
+  MEDIUM
+  HEAVY
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -18,8 +26,25 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts      Account[]
-  sessions      Session[]
+  accounts  Account[]
+  sessions  Session[]
+  cycleLogs CycleLog[]
+}
+
+model CycleLog {
+  id        String     @id @default(cuid())
+  userId    String
+  date      DateTime   @db.Date
+  flow      FlowLevel?
+  mood      Int?
+  pain      Int?
+  notes     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
 }
 
 // Modelos de Auth.js (ver sección 8)

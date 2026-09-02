@@ -47,6 +47,11 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model CycleLog
+ * 
+ */
+export type CycleLog = Prisma.CycleLogModel
+/**
  * Model Account
  * 
  */

@@ -4,7 +4,6 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
 
-import { isAllowedEmail } from "@/core/config/allowed-emails";
 import { db } from "@/core/lib/db";
 import { verifyCredentials } from "@/core/lib/verify-credentials";
 
@@ -34,9 +33,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   session: { strategy: "jwt" },
   callbacks: {
-    signIn({ user }) {
-      return isAllowedEmail(user.email);
-    },
     jwt({ token, user }) {
       if (user) {
         token.sub = user.id;

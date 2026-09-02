@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  CycleLog: 'CycleLog',
   Account: 'Account',
   Session: 'Session',
   VerificationToken: 'VerificationToken'
@@ -85,6 +86,21 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const CycleLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  date: 'date',
+  flow: 'flow',
+  mood: 'mood',
+  pain: 'pain',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CycleLogScalarFieldEnum = (typeof CycleLogScalarFieldEnum)[keyof typeof CycleLogScalarFieldEnum]
 
 
 export const AccountScalarFieldEnum = {

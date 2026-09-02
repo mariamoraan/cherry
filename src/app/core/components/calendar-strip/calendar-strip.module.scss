@@ -1,0 +1,66 @@
+.calendarStrip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  margin: 0.25rem 0 1.35rem;
+}
+
+.calendarStrip__label {
+  margin-bottom: 0.45rem;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.calendarStrip__day {
+  position: relative;
+  display: flex;
+  height: 2.6rem;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.calendarStrip__day--period {
+  background: var(--color-pink);
+  color: #fff;
+}
+
+.calendarStrip__day--visualStart {
+  border-top-left-radius: var(--radius-pill);
+  border-bottom-left-radius: var(--radius-pill);
+}
+
+.calendarStrip__day--visualEnd {
+  border-top-right-radius: var(--radius-pill);
+  border-bottom-right-radius: var(--radius-pill);
+}
+
+.calendarStrip__num {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  width: 1.85rem;
+  height: 1.85rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendarStrip__day--today .calendarStrip__num,
+.calendarStrip__day--selected .calendarStrip__num {
+  border-radius: var(--radius-pill);
+  box-shadow: inset 0 0 0 1.5px var(--color-navy);
+}
+
+.calendarStrip__day--period.calendarStrip__day--today .calendarStrip__num,
+.calendarStrip__day--period.calendarStrip__day--selected .calendarStrip__num {
+  box-shadow: inset 0 0 0 1.5px var(--color-ring);
+}

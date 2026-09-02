@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
@@ -11,8 +12,6 @@ import {
 import styles from "./page.module.scss";
 
 const ERROR_MESSAGES: Record<string, string> = {
-  AccessDenied:
-    "Access denied. Your email is not authorized to use this application.",
   Configuration: "There is a problem with the server configuration.",
   CredentialsSignin: "Invalid email or password.",
   Default: "An error occurred during sign in. Please try again.",
@@ -78,7 +77,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <div className={styles.header}>
             <h1 className={styles.heading}>{siteConfig.name}</h1>
             <p className={styles.subheading}>
-              Sign in to continue to your dashboard
+              Inicia sesión para sincronizar tus datos en la nube
             </p>
           </div>
 
@@ -148,7 +147,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </div>
 
           <p className={styles.footer}>
-            Access is restricted to authorized users only.
+            ¿No tienes cuenta?{" "}
+            <Link href="/register" className={styles.link}>
+              Regístrate
+            </Link>
           </p>
         </div>
       </div>

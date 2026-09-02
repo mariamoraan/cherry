@@ -1,0 +1,17 @@
+.migrateToast {
+  position: fixed;
+  right: 1rem;
+  bottom: calc(var(--nav-height) + 1.5rem);
+  z-index: 50;
+  max-width: 20rem;
+  border-radius: 1rem;
+  background: #eef7f0;
+  padding: 0.85rem 1rem;
+  font-size: 0.875rem;
+  color: var(--color-success);
+  box-shadow: var(--shadow-card);
+
+  @media (min-width: 1200px) {
+    bottom: 1.5rem;
+  }
+}

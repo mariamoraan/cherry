@@ -1,0 +1,45 @@
+.bottomNav {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  z-index: 20;
+  display: flex;
+  width: min(24rem, calc(100% - 2rem));
+  transform: translateX(-50%);
+  align-items: center;
+  justify-content: space-around;
+  gap: 0.2rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-navy);
+  padding: 0.45rem;
+  box-shadow: 0 12px 30px rgb(42 46 61 / 0.28);
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.bottomNav__item {
+  display: inline-flex;
+  min-height: 2.75rem;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border-radius: var(--radius-pill);
+  color: #d7d9e0;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.bottomNav__item--active {
+  background: rgb(255 255 255 / 0.12);
+  color: #fff;
+}
+
+.bottomNav__icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}

@@ -135,6 +135,13 @@ export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeFilter<$PrismaModel>
 }
 
+export type EnumFlowLevelNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.FlowLevel | Prisma.EnumFlowLevelFieldRefInput<$PrismaModel> | null
+  in?: $Enums.FlowLevel[] | Prisma.ListEnumFlowLevelFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.FlowLevel[] | Prisma.ListEnumFlowLevelFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumFlowLevelNullableFilter<$PrismaModel> | $Enums.FlowLevel | null
+}
+
 export type IntNullableFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
@@ -144,6 +151,16 @@ export type IntNullableFilter<$PrismaModel = never> = {
   gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
   gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
   not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null
+}
+
+export type EnumFlowLevelNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FlowLevel | Prisma.EnumFlowLevelFieldRefInput<$PrismaModel> | null
+  in?: $Enums.FlowLevel[] | Prisma.ListEnumFlowLevelFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.FlowLevel[] | Prisma.ListEnumFlowLevelFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumFlowLevelNullableWithAggregatesFilter<$PrismaModel> | $Enums.FlowLevel | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFlowLevelNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFlowLevelNullableFilter<$PrismaModel>
 }
 
 export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -294,6 +311,23 @@ export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeFilter<$PrismaModel>
+}
+
+export type NestedEnumFlowLevelNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.FlowLevel | Prisma.EnumFlowLevelFieldRefInput<$PrismaModel> | null
+  in?: $Enums.FlowLevel[] | Prisma.ListEnumFlowLevelFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.FlowLevel[] | Prisma.ListEnumFlowLevelFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumFlowLevelNullableFilter<$PrismaModel> | $Enums.FlowLevel | null
+}
+
+export type NestedEnumFlowLevelNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FlowLevel | Prisma.EnumFlowLevelFieldRefInput<$PrismaModel> | null
+  in?: $Enums.FlowLevel[] | Prisma.ListEnumFlowLevelFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.FlowLevel[] | Prisma.ListEnumFlowLevelFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumFlowLevelNullableWithAggregatesFilter<$PrismaModel> | $Enums.FlowLevel | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFlowLevelNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFlowLevelNullableFilter<$PrismaModel>
 }
 
 export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {

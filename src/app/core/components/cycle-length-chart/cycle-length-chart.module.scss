@@ -1,0 +1,119 @@
+.cycleLengthChart {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  padding: 1.5rem 1.35rem 1.75rem;
+  box-shadow: var(--shadow-card);
+
+  @media (min-width: 768px) {
+    padding: 1.75rem 1.6rem 2rem;
+  }
+}
+
+.cycleLengthChart__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+
+.cycleLengthChart__title {
+  margin: 0;
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.cycleLengthChart__tabs {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.cycleLengthChart__tab {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+}
+
+.cycleLengthChart__tab--active {
+  color: var(--color-navy);
+}
+
+.cycleLengthChart__status {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+.cycleLengthChart__empty,
+.cycleLengthChart__loading {
+  margin: 1rem 0 0;
+  color: var(--color-text-muted);
+}
+
+.cycleLengthChart__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cycleLengthChart__row {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, 8.5rem) minmax(0, 1fr) 4.2rem;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.cycleLengthChart__dates {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-navy);
+}
+
+.cycleLengthChart__track {
+  position: relative;
+  height: 0.7rem;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--color-track);
+}
+
+.cycleLengthChart__bar {
+  position: relative;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: #ddd7d1;
+}
+
+.cycleLengthChart__period {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-pink);
+}
+
+.cycleLengthChart__average {
+  position: absolute;
+  top: -0.35rem;
+  bottom: -0.35rem;
+  width: 0;
+  border-left: 1.5px dashed var(--color-navy);
+  opacity: 0.45;
+}
+
+.cycleLengthChart__days {
+  text-align: right;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}

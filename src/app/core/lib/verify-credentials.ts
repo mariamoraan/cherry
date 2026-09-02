@@ -1,6 +1,5 @@
 import bcrypt from "bcryptjs";
 
-import { isAllowedEmail } from "@/core/config/allowed-emails";
 import { db } from "@/core/lib/db";
 
 export async function verifyCredentials(
@@ -9,7 +8,7 @@ export async function verifyCredentials(
 ): Promise<{ id: string; email: string; name: string | null } | null> {
   const normalizedEmail = email.trim().toLowerCase();
 
-  if (!normalizedEmail || !password || !isAllowedEmail(normalizedEmail)) {
+  if (!normalizedEmail || !password) {
     return null;
   }
 

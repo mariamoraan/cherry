@@ -1,0 +1,124 @@
+.appShell {
+  --header-height: 4.5rem;
+  display: grid;
+  min-height: 100dvh;
+  grid-template-rows: var(--header-height) 1fr;
+  padding-bottom: calc(var(--nav-height) + 1.5rem);
+  background:
+    radial-gradient(circle at 12% -10%, rgb(224 122 122 / 0.18), transparent 32%),
+    radial-gradient(circle at 110% 8%, rgb(42 46 61 / 0.06), transparent 28%),
+    var(--color-bg);
+
+  @media (min-width: 768px) {
+    padding-bottom: 2rem;
+  }
+}
+
+.appShell__header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  padding: 0.75rem var(--space-page);
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr auto 1fr;
+    padding: 1rem 1.75rem 0.5rem;
+  }
+}
+
+.appShell__date {
+  display: inline-flex;
+  min-width: 0;
+  overflow: hidden;
+  align-items: center;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--color-pink-text);
+  }
+}
+
+.appShell__nav {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+
+  @media (min-width: 768px) {
+    display: flex;
+  }
+}
+
+.appShell__navItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: var(--radius-pill);
+  padding: 0.55rem 0.95rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.appShell__navItem--active {
+  background: var(--color-navy);
+  color: #fff;
+}
+
+.appShell__navIcon {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.appShell__headerAction {
+  justify-self: end;
+}
+
+.appShell__main {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0.5rem var(--space-page) 1.5rem;
+
+  @media (min-width: 768px) {
+    padding: 1.25rem 1.75rem 2rem;
+  }
+}
+
+.appShell__main--today,
+.appShell__main--insights {
+  max-width: 40rem;
+}
+
+.appShell__main--calendar {
+  max-width: 36rem;
+}
+
+.appShell__today,
+.appShell__calendar,
+.appShell__insights {
+  display: none;
+}
+
+.appShell--today .appShell__today,
+.appShell--calendar .appShell__calendar,
+.appShell--insights .appShell__insights {
+  display: block;
+}
+
+.appShell__calendar {
+  border-radius: var(--radius-card);
+  background: var(--color-navy);
+  color: #fff;
+  padding: 1.5rem 1.15rem 1.75rem;
+  box-shadow: var(--shadow-card);
+
+  @media (min-width: 768px) {
+    padding: 1.75rem 1.5rem 2rem;
+  }
+}

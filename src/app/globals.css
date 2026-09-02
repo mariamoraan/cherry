@@ -1,26 +1,71 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-pink: #e07a7a;
+  --color-pink-soft: #f3c4c4;
+  --color-pink-text: #e56b73;
+  --color-navy: #2a2e3d;
+  --color-navy-muted: #3d4254;
+  --color-bg: #f4f1ed;
+  --color-surface: #ffffff;
+  --color-text: #2a2e3d;
+  --color-text-muted: #8b8e99;
+  --color-track: #ece8e4;
+  --color-ring: #ffffff;
+  --color-danger: #c24141;
+  --color-success: #2f7d4a;
+  --radius-card: 1.5rem;
+  --radius-pill: 999px;
+  --shadow-card: 0 10px 30px rgb(42 46 61 / 0.07);
+  --font-sans: var(--font-plus-jakarta), system-ui, sans-serif;
+  --nav-height: 4.75rem;
+  --space-page: 1.25rem;
+  --bp-tablet: 768px;
+  --bp-desktop: 1200px;
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-plus-jakarta);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-pink);
+  outline-offset: 2px;
 }

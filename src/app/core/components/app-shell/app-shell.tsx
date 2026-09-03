@@ -11,6 +11,7 @@ import {
 } from "react";
 import Link from "next/link";
 
+import { JumpToToday } from "@/core/components/jump-to-today/jump-to-today";
 import { cx } from "@/core/lib/cx";
 
 import styles from "./app-shell.module.scss";
@@ -23,8 +24,11 @@ type AppShellProps = {
   headerAction: ReactNode;
   today: ReactNode;
   calendar: ReactNode;
+  datePicker: ReactNode;
   insights: ReactNode;
   nav: ReactNode;
+  showJumpToToday: boolean;
+  onJumpToToday: () => void;
 };
 
 const NAV_ITEMS: Array<{ pane: TrackerPane; href: string; label: string }> = [
@@ -39,8 +43,11 @@ export function AppShell({
   headerAction,
   today,
   calendar,
+  datePicker,
   insights,
   nav,
+  showJumpToToday,
+  onJumpToToday,
 }: AppShellProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const datePopoverAnchorRef = useRef<HTMLDivElement | null>(null);
@@ -67,22 +74,22 @@ export function AppShell({
     };
   }, [isCalendarOpen]);
 
-  const calendarElement = isValidElement(calendar)
-    ? (calendar as ReactElement<{
+  const pickerElement = isValidElement(datePicker)
+    ? (datePicker as ReactElement<{
         onSelectDate?: (date: string) => void;
         variant?: "default" | "sm";
       }>)
     : null;
 
-  const calendarForPopover = calendarElement?.props.onSelectDate
-    ? cloneElement(calendarElement, {
+  const pickerForPopover = pickerElement?.props.onSelectDate
+    ? cloneElement(pickerElement, {
         onSelectDate: (date: string) => {
-          calendarElement.props.onSelectDate?.(date);
+          pickerElement.props.onSelectDate?.(date);
           setIsCalendarOpen(false);
         },
         variant: "sm",
       })
-    : calendar;
+    : datePicker;
 
   return (
     <div className={cx(styles.appShell, styles[`appShell--${pane}`])}>
@@ -110,7 +117,7 @@ export function AppShell({
               aria-label="Calendario"
             >
               <section className={styles.appShell__calendarPopoverCard}>
-                {calendarForPopover}
+                {pickerForPopover}
               </section>
             </div>
           )}
@@ -146,6 +153,7 @@ export function AppShell({
         </section>
       </div>
 
+      <JumpToToday visible={showJumpToToday} onClick={onJumpToToday} />
       {nav}
     </div>
   );

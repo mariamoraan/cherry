@@ -69,6 +69,29 @@ export function formatLongDate(dateKey: string): string {
   }).format(fromDateKey(dateKey));
 }
 
+export function formatHeaderDate(dateKey: string, today: string): string {
+  if (dateKey === today) return "Hoy";
+  if (dateKey === addDays(today, -1)) return "Ayer";
+  if (dateKey === addDays(today, 1)) return "Mañana";
+  return formatLongDate(dateKey);
+}
+
+export function formatGreetingQuestion(dateKey: string, today: string): string {
+  if (dateKey === today) return "¿Cómo te sientes hoy?";
+  if (dateKey === addDays(today, -1)) return "¿Cómo te sentiste ayer?";
+  if (dateKey === addDays(today, 1)) return "¿Cómo te sientes mañana?";
+  return "¿Cómo te sientes?";
+}
+
+export function formatGreeting(firstName: string | null, dateKey: string, today: string): string {
+  const question = formatGreetingQuestion(dateKey, today);
+  if (!firstName) return question;
+  const lowered = question.replace(/^¿([A-ZÁÉÍÓÚÜÑ])/, (_, letter: string) => {
+    return `¿${letter.toLocaleLowerCase("es-ES")}`;
+  });
+  return `Hola ${firstName}, ${lowered}`;
+}
+
 export function formatMonthYear(dateKey: string): string {
   return capitalize(
     new Intl.DateTimeFormat("es-ES", {

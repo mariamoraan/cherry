@@ -56,6 +56,12 @@ export function getAverageCycleLength(rows: CycleRow[]): number | null {
   return Math.round(total / completed.length);
 }
 
+export function getAveragePeriodDays(rows: CycleRow[]): number | null {
+  if (rows.length === 0) return null;
+  const total = rows.reduce((sum, row) => sum + row.periodDays, 0);
+  return Math.round(total / rows.length);
+}
+
 export function getMaxCycleDays(rows: CycleRow[]): number {
   return rows.reduce((max, row) => Math.max(max, row.cycleDays), 0);
 }

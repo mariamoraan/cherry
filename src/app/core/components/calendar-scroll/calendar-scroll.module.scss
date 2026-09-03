@@ -1,0 +1,113 @@
+.calendarScroll {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 2rem;
+}
+
+.calendarScroll__weekdays {
+  position: sticky;
+  top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin: 0 calc(-1 * var(--space-page));
+  padding: 0.55rem var(--space-page);
+  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  text-align: center;
+
+  @media (min-width: 768px) {
+    margin: 0 -1.75rem;
+    padding-left: 1.75rem;
+    padding-right: 1.75rem;
+  }
+}
+
+.calendarScroll__months {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.calendarScroll__month {
+  scroll-margin-top: calc(var(--header-height) + env(safe-area-inset-top, 0px) + 2.25rem);
+}
+
+.calendarScroll__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.calendarScroll__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.calendarScroll__empty {
+  height: 2.7rem;
+}
+
+.calendarScroll__day {
+  position: relative;
+  display: flex;
+  height: 2.7rem;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-navy);
+  cursor: pointer;
+}
+
+.calendarScroll__day--period {
+  background: var(--color-pink);
+  color: #fff;
+}
+
+.calendarScroll__day--predicted {
+  background: var(--color-pink-soft);
+  color: var(--color-pink-text);
+}
+
+.calendarScroll__day--visualStart {
+  border-top-left-radius: var(--radius-pill);
+  border-bottom-left-radius: var(--radius-pill);
+}
+
+.calendarScroll__day--visualEnd {
+  border-top-right-radius: var(--radius-pill);
+  border-bottom-right-radius: var(--radius-pill);
+}
+
+.calendarScroll__num {
+  display: inline-flex;
+  width: 1.9rem;
+  height: 1.9rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendarScroll__day--today .calendarScroll__num,
+.calendarScroll__day--selected .calendarScroll__num {
+  border-radius: var(--radius-pill);
+  box-shadow: inset 0 0 0 1.5px var(--color-navy);
+}
+
+.calendarScroll__day--period.calendarScroll__day--today .calendarScroll__num,
+.calendarScroll__day--period.calendarScroll__day--selected .calendarScroll__num {
+  box-shadow: inset 0 0 0 1.5px var(--color-ring);
+}
+
+.calendarScroll__sentinel {
+  height: 1px;
+}

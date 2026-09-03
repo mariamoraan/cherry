@@ -1,21 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  --color-pink: #e07a7a;
-  --color-pink-soft: #f3c4c4;
-  --color-pink-text: #e56b73;
+  --color-pink: #d97880;
+  --color-pink-soft: #f3d0d3;
+  --color-pink-text: #c9656e;
+  --color-pink-muted: #e8a0a6;
+  --color-peach: #e9b09a;
+  --color-peach-soft: #f6dfd4;
+  --color-sage: #6f9580;
+  --color-sage-soft: #dce8e1;
+  --color-sky: #6d8a9e;
+  --color-sky-soft: #d9e4eb;
   --color-navy: #2a2e3d;
   --color-navy-muted: #3d4254;
-  --color-bg: #f4f1ed;
-  --color-bg-top: #f1e6e2;
+  --color-bg: #f6f2f4;
+  --color-bg-top: #f0e4e8;
   --app-bg:
-    radial-gradient(circle at 12% -10%, rgb(224 122 122 / 0.18), transparent 32%),
-    radial-gradient(circle at 110% 8%, rgb(42 46 61 / 0.06), transparent 28%),
+    radial-gradient(circle at 12% -10%, rgb(217 120 128 / 0.16), transparent 34%),
+    radial-gradient(circle at 108% 6%, rgb(111 149 128 / 0.1), transparent 30%),
     var(--color-bg);
   --color-surface: #ffffff;
   --color-text: #2a2e3d;
   --color-text-muted: #8b8e99;
-  --color-track: #ece8e4;
+  --color-track: #ebe4e7;
   --color-ring: #ffffff;
   --color-danger: #c24141;
   --color-success: #2f7d4a;
@@ -25,6 +32,7 @@
   --font-sans: var(--font-plus-jakarta), system-ui, sans-serif;
   --nav-height: 4.75rem;
   --space-page: 1.25rem;
+  --header-height: 4.5rem;
   --bp-tablet: 768px;
   --bp-desktop: 1200px;
   --background: var(--color-bg);

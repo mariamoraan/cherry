@@ -11,16 +11,17 @@ import {
   splitDateKey,
   WEEKDAY_LABELS,
 } from "@/core/cycle/dates";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/core/icons";
 import { cx } from "@/core/lib/cx";
 
 import styles from "./calendar-month.module.scss";
-import { ChevronLeftIcon, ChevronRightIcon } from "../../icons";
 
 type CalendarMonthProps = {
   monthKey: string;
   today: string;
   selectedDate: string;
   periodDates: Set<string>;
+  predictedDates?: Set<string>;
   onSelectDate: (date: string) => void;
   onPrevMonth: () => void;
   onNextMonth: () => void;
@@ -32,6 +33,7 @@ export function CalendarMonth({
   today,
   selectedDate,
   periodDates,
+  predictedDates = new Set(),
   onSelectDate,
   onPrevMonth,
   onNextMonth,
@@ -39,7 +41,7 @@ export function CalendarMonth({
 }: CalendarMonthProps) {
   const { year, month } = splitDateKey(monthKey);
   const days = getMonthGrid(year, month).map((date) =>
-    decorateDay(date, month, today, selectedDate, periodDates),
+    decorateDay(date, month, today, selectedDate, periodDates, predictedDates),
   );
 
   return (
@@ -97,6 +99,7 @@ function dayClassName(day: CalendarDay): string {
     styles.calendarMonth__day,
     !day.inMonth && styles["calendarMonth__day--outside"],
     day.isPeriod && styles["calendarMonth__day--period"],
+    day.isPredicted && styles["calendarMonth__day--predicted"],
     day.isVisualStart && styles["calendarMonth__day--visualStart"],
     day.isVisualEnd && styles["calendarMonth__day--visualEnd"],
     day.isToday && styles["calendarMonth__day--today"],

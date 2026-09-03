@@ -22,6 +22,7 @@ export type CalendarDay = {
   isToday: boolean;
   isSelected: boolean;
   isPeriod: boolean;
+  isPredicted: boolean;
   isPeriodStart: boolean;
   isPeriodEnd: boolean;
   isVisualStart: boolean;
@@ -45,9 +46,13 @@ export function decorateDay(
   today: string,
   selectedDate: string,
   periodDates: Set<string>,
+  predictedDates: Set<string> = new Set(),
 ): CalendarDay {
   const { day, month: dateMonth } = splitDateKey(date);
   const weekday = weekdayMondayFirst(date);
+  const isPeriod = periodDates.has(date);
+  const isPredicted = !isPeriod && predictedDates.has(date);
+  const bandDates = isPeriod ? periodDates : isPredicted ? predictedDates : periodDates;
 
   return {
     date,
@@ -56,11 +61,14 @@ export function decorateDay(
     weekday,
     isToday: date === today,
     isSelected: date === selectedDate,
-    isPeriod: periodDates.has(date),
+    isPeriod,
+    isPredicted,
     isPeriodStart: isPeriodStart(date, periodDates),
     isPeriodEnd: isPeriodEnd(date, periodDates),
-    isVisualStart: isVisualPeriodStart(date, periodDates, weekday),
-    isVisualEnd: isVisualPeriodEnd(date, periodDates, weekday),
+    isVisualStart:
+      (isPeriod || isPredicted) && isVisualPeriodStart(date, bandDates, weekday),
+    isVisualEnd:
+      (isPeriod || isPredicted) && isVisualPeriodEnd(date, bandDates, weekday),
   };
 }
 

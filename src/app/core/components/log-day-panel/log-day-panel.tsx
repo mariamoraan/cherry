@@ -200,6 +200,35 @@ export function LogDayPanel({
     }
   };
 
+  const flowChipClass = {
+    SPOTTING: styles["logDayPanel__chip--flowSpotting"],
+    LIGHT: styles["logDayPanel__chip--flowLight"],
+    MEDIUM: styles["logDayPanel__chip--flowMedium"],
+    HEAVY: styles["logDayPanel__chip--flowHeavy"],
+  } as const;
+
+  const moodChipClass = {
+    HAPPY: styles["logDayPanel__chip--moodHappy"],
+    CALM: styles["logDayPanel__chip--moodCalm"],
+    SAD: styles["logDayPanel__chip--moodSad"],
+    IRRITABLE: styles["logDayPanel__chip--moodIrritable"],
+    ANXIOUS: styles["logDayPanel__chip--moodAnxious"],
+    TIRED: styles["logDayPanel__chip--moodTired"],
+    ENERGETIC: styles["logDayPanel__chip--moodEnergetic"],
+    SENSITIVE: styles["logDayPanel__chip--moodSensitive"],
+  } as const;
+
+  const symptomChipClass = {
+    HEADACHE: styles["logDayPanel__chip--symptomHeadache"],
+    ACNE: styles["logDayPanel__chip--symptomAcne"],
+    CRAMPS: styles["logDayPanel__chip--symptomCramps"],
+    BREAST_TENDERNESS: styles["logDayPanel__chip--symptomBreast"],
+    BLOATING: styles["logDayPanel__chip--symptomBloating"],
+    NAUSEA: styles["logDayPanel__chip--symptomNausea"],
+    BACK_PAIN: styles["logDayPanel__chip--symptomBack"],
+    CRAVINGS: styles["logDayPanel__chip--symptomCravings"],
+  } as const;
+
   return (
     <section className={styles.logDayPanel} aria-labelledby="log-day-title">
       <div className={styles.logDayPanel__heading}>
@@ -238,13 +267,14 @@ export function LogDayPanel({
                 aria-pressed={flow === level}
                 className={cx(
                   styles.logDayPanel__chip,
+                  flowChipClass[level],
                   flow === level && styles["logDayPanel__chip--active"],
                 )}
                 onClick={() => updateFlow(level)}
               >
                 <WavesHorizontalIcon
                   className="logDayPanel__chip__icon"
-                  color={flow === level ? "#fff" : "#F54927"}
+                  color="currentColor"
                   width={getFlowIconSize(level)}
                   height={getFlowIconSize(level)}
                 />
@@ -267,16 +297,12 @@ export function LogDayPanel({
                   className={cx(
                     styles.logDayPanel__chip,
                     styles["logDayPanel__chip--labeled"],
+                    moodChipClass[value],
                     selected && styles["logDayPanel__chip--active"],
                   )}
                   onClick={() => updateMood(value)}
                 >
-                  <Icon
-                    color={selected ? "#fff" : "#F54927"}
-                    width={18}
-                    height={18}
-                    aria-hidden="true"
-                  />
+                  <Icon color="currentColor" width={18} height={18} aria-hidden="true" />
                   {MOOD_LABELS[value]}
                 </button>
               );
@@ -298,16 +324,12 @@ export function LogDayPanel({
                   className={cx(
                     styles.logDayPanel__chip,
                     styles["logDayPanel__chip--labeled"],
+                    symptomChipClass[value],
                     selected && styles["logDayPanel__chip--active"],
                   )}
                   onClick={() => updateSymptom(value)}
                 >
-                  <Icon
-                    color={selected ? "#fff" : "#F54927"}
-                    width={18}
-                    height={18}
-                    aria-hidden="true"
-                  />
+                  <Icon color="currentColor" width={18} height={18} aria-hidden="true" />
                   {SYMPTOM_LABELS[value]}
                 </button>
               );

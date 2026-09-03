@@ -18,7 +18,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 0.9rem;
-  background: #f6eaea;
+  background: var(--color-pink-soft);
   color: var(--color-pink-text);
 }
 
@@ -38,7 +38,7 @@
 .logDayPanel__banner {
   margin: 0 0 1rem;
   border-radius: 1rem;
-  background: #f6eaea;
+  background: var(--color-peach-soft);
   padding: 0.75rem 0.9rem;
   font-size: 0.85rem;
   color: var(--color-navy);
@@ -81,9 +81,11 @@
 }
 
 .logDayPanel__chip {
-  border: 2px solid #C82909;
+  --chip-accent: var(--color-pink);
+  --chip-soft: var(--color-pink-soft);
+  border: 2px solid var(--chip-accent);
   border-radius: 8px;
-  background: white;
+  background: var(--color-surface);
   padding: 0.7rem;
   display: flex;
   justify-content: center;
@@ -91,8 +93,53 @@
   flex: 1;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #C82909;
+  color: var(--chip-accent);
   cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.logDayPanel__chip--flowSpotting {
+  --chip-accent: var(--color-pink-muted);
+}
+
+.logDayPanel__chip--flowLight {
+  --chip-accent: var(--color-pink);
+}
+
+.logDayPanel__chip--flowMedium {
+  --chip-accent: var(--color-pink-text);
+}
+
+.logDayPanel__chip--flowHeavy {
+  --chip-accent: #b84f58;
+}
+
+.logDayPanel__chip--moodHappy,
+.logDayPanel__chip--moodEnergetic,
+.logDayPanel__chip--symptomCravings {
+  --chip-accent: var(--color-peach);
+}
+
+.logDayPanel__chip--moodCalm,
+.logDayPanel__chip--moodSensitive,
+.logDayPanel__chip--symptomBreast,
+.logDayPanel__chip--symptomBloating {
+  --chip-accent: var(--color-sage);
+}
+
+.logDayPanel__chip--moodSad,
+.logDayPanel__chip--moodTired,
+.logDayPanel__chip--moodAnxious,
+.logDayPanel__chip--symptomHeadache,
+.logDayPanel__chip--symptomNausea,
+.logDayPanel__chip--symptomBack {
+  --chip-accent: var(--color-sky);
+}
+
+.logDayPanel__chip--moodIrritable,
+.logDayPanel__chip--symptomAcne,
+.logDayPanel__chip--symptomCramps {
+  --chip-accent: var(--color-pink-text);
 }
 
 .logDayPanel__chip--labeled {
@@ -105,16 +152,16 @@
 }
 
 .logDayPanel__chip--active {
-  background: #C82909;
+  background: var(--chip-accent);
   color: #fff;
 }
 
 .logDayPanel__input,
 .logDayPanel__textarea {
   width: 100%;
-  border: 1px solid #e4ddd6;
+  border: 1px solid var(--color-track);
   border-radius: 0.9rem;
-  background: #faf8f6;
+  background: var(--color-surface);
   padding: 0.7rem 0.85rem;
   color: var(--color-text);
 

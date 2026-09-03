@@ -1,3 +1,4 @@
+import { formatGreeting } from "@/core/cycle/dates";
 import { cx } from "@/core/lib/cx";
 
 import styles from "./today-hero.module.scss";
@@ -6,13 +7,17 @@ type TodayHeroProps = {
   firstName: string | null;
   periodDay: number | null;
   cycleDay: number | null;
+  selectedDate: string;
+  today: string;
 };
 
-export function TodayHero({ firstName, periodDay, cycleDay }: TodayHeroProps) {
-  const greeting = firstName
-    ? `Hola ${firstName}, ¿cómo te sientes hoy?`
-    : "¿Cómo te sientes hoy?";
-
+export function TodayHero({
+  firstName,
+  periodDay,
+  cycleDay,
+  selectedDate,
+  today,
+}: TodayHeroProps) {
   return (
     <div className={styles.todayHero}>
       <h1
@@ -23,7 +28,9 @@ export function TodayHero({ firstName, periodDay, cycleDay }: TodayHeroProps) {
       >
         {statusLabel(periodDay, cycleDay)}
       </h1>
-      <p className={styles.todayHero__greeting}>{greeting}</p>
+      <p className={styles.todayHero__greeting}>
+        {formatGreeting(firstName, selectedDate, today)}
+      </p>
     </div>
   );
 }

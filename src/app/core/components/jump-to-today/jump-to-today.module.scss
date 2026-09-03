@@ -1,0 +1,36 @@
+.jumpToToday {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  bottom: calc(var(--nav-height) + 1.5rem);
+  z-index: 25;
+  display: inline-flex;
+  min-width: 3.4rem;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0.95rem;
+  background: var(--color-navy);
+  padding: 0 1rem;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.5rem) scale(0.96);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  @media (min-width: 768px) {
+    bottom: 1.5rem;
+  }
+}
+
+.jumpToToday--visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}

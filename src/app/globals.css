@@ -7,6 +7,7 @@
   --color-navy: #2a2e3d;
   --color-navy-muted: #3d4254;
   --color-bg: #f4f1ed;
+  --color-bg-top: #f1e6e2;
   --color-surface: #ffffff;
   --color-text: #2a2e3d;
   --color-text-muted: #8b8e99;
@@ -41,6 +42,10 @@
 html,
 body {
   min-height: 100%;
+}
+
+html {
+  background: var(--color-bg-top);
 }
 
 body {

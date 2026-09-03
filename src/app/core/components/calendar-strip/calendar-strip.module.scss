@@ -14,6 +14,11 @@
   color: var(--color-text-muted);
 }
 
+.calendarStrip__label--today {
+  color: var(--color-text);
+  font-weight: 800;
+}
+
 .calendarStrip__day {
   position: relative;
   display: flex;

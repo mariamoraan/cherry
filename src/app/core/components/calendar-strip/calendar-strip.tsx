@@ -17,7 +17,10 @@ export function CalendarStrip({ days, onSelectDate }: CalendarStripProps) {
       {days.map((day) => (
         <span
           key={`label-${day.date}`}
-          className={styles.calendarStrip__label}
+          className={cx(
+            styles.calendarStrip__label,
+            day.isToday && styles["calendarStrip__label--today"],
+          )}
           aria-hidden="true"
         >
           {WEEKDAY_LABELS[day.weekday]}

@@ -23,6 +23,7 @@ type CalendarMonthProps = {
   onSelectDate: (date: string) => void;
   onPrevMonth: () => void;
   onNextMonth: () => void;
+  variant?: "default" | "sm";
 };
 
 export function CalendarMonth({
@@ -33,6 +34,7 @@ export function CalendarMonth({
   onSelectDate,
   onPrevMonth,
   onNextMonth,
+  variant = "default",
 }: CalendarMonthProps) {
   const { year, month } = splitDateKey(monthKey);
   const days = getMonthGrid(year, month).map((date) =>
@@ -40,7 +42,12 @@ export function CalendarMonth({
   );
 
   return (
-    <section className={styles.calendarMonth}>
+    <section
+      className={cx(
+        styles.calendarMonth,
+        variant === "sm" && styles["calendarMonth--sm"],
+      )}
+    >
       <div className={styles.calendarMonth__header}>
         <button
           type="button"

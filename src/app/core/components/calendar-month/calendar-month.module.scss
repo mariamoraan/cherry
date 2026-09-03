@@ -4,6 +4,10 @@
   gap: 1rem;
 }
 
+.calendarMonth--sm {
+  gap: 0.75rem;
+}
+
 .calendarMonth__header {
   display: flex;
   align-items: center;
@@ -17,6 +21,10 @@
   text-align: center;
   font-size: 1.25rem;
   font-weight: 700;
+}
+
+.calendarMonth--sm .calendarMonth__title {
+  font-size: 1.05rem;
 }
 
 .calendarMonth__nav {
@@ -36,6 +44,11 @@
   }
 }
 
+.calendarMonth--sm .calendarMonth__nav {
+  width: 2.15rem;
+  height: 2.15rem;
+}
+
 .calendarMonth__weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -44,6 +57,10 @@
   letter-spacing: 0.04em;
   color: rgb(255 255 255 / 0.55);
   text-align: center;
+}
+
+.calendarMonth--sm .calendarMonth__weekdays {
+  font-size: 0.65rem;
 }
 
 .calendarMonth__grid {
@@ -64,6 +81,10 @@
   font-weight: 600;
   color: #fff;
   cursor: pointer;
+}
+
+.calendarMonth--sm .calendarMonth__day {
+  height: 2.25rem;
 }
 
 .calendarMonth__day--outside {
@@ -91,6 +112,11 @@
   height: 1.9rem;
   align-items: center;
   justify-content: center;
+}
+
+.calendarMonth--sm .calendarMonth__num {
+  width: 1.65rem;
+  height: 1.65rem;
 }
 
 .calendarMonth__day--today .calendarMonth__num,

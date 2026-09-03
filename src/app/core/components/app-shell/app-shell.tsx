@@ -1,7 +1,15 @@
 "use client";
 
+import {
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import Link from "next/link";
-import type { ReactNode } from "react";
 
 import { cx } from "@/core/lib/cx";
 
@@ -34,12 +42,79 @@ export function AppShell({
   insights,
   nav,
 }: AppShellProps) {
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const datePopoverAnchorRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!isCalendarOpen) return;
+
+    const handleDocumentPointerDown = (event: MouseEvent) => {
+      const target = event.target as Node | null;
+      if (!target) return;
+      if (datePopoverAnchorRef.current?.contains(target)) return;
+      setIsCalendarOpen(false);
+    };
+
+    const handleDocumentKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsCalendarOpen(false);
+    };
+
+    document.addEventListener("mousedown", handleDocumentPointerDown);
+    document.addEventListener("keydown", handleDocumentKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleDocumentPointerDown);
+      document.removeEventListener("keydown", handleDocumentKeyDown);
+    };
+  }, [isCalendarOpen]);
+
+  const calendarElement = isValidElement(calendar)
+    ? (calendar as ReactElement<{
+        onSelectDate?: (date: string) => void;
+        variant?: "default" | "sm";
+      }>)
+    : null;
+
+  const calendarForPopover = calendarElement?.props.onSelectDate
+    ? cloneElement(calendarElement, {
+        onSelectDate: (date: string) => {
+          calendarElement.props.onSelectDate?.(date);
+          setIsCalendarOpen(false);
+        },
+        variant: "sm",
+      })
+    : calendar;
+
   return (
     <div className={cx(styles.appShell, styles[`appShell--${pane}`])}>
       <header className={styles.appShell__header}>
-        <Link href="/calendar" className={styles.appShell__date}>
-          {formattedDate}
-        </Link>
+        <div
+          className={styles.appShell__datePopoverAnchor}
+          ref={datePopoverAnchorRef}
+        >
+          <button
+            type="button"
+            className={styles.appShell__date}
+            aria-haspopup="dialog"
+            aria-expanded={isCalendarOpen}
+            aria-controls="calendar-date-popover"
+            onClick={() => setIsCalendarOpen((v) => !v)}
+          >
+            {formattedDate}
+          </button>
+
+          {isCalendarOpen && (
+            <div
+              className={styles.appShell__datePopover}
+              id="calendar-date-popover"
+              role="dialog"
+              aria-label="Calendario"
+            >
+              <section className={styles.appShell__calendarPopoverCard}>
+                {calendarForPopover}
+              </section>
+            </div>
+          )}
+        </div>
         <nav className={styles.appShell__nav} aria-label="Principal">
           {NAV_ITEMS.map((item) => (
             <Link

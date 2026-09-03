@@ -4,15 +4,20 @@ import { useRef, useState } from "react";
 
 import Link from "next/link";
 
-import { FLOW_LABELS, MOOD_LABELS } from "@/core/cycle/labels";
+import { FLOW_LABELS, MOOD_LABELS, SYMPTOM_LABELS } from "@/core/cycle/labels";
 import {
+  BoneIcon,
+  BrainIcon,
+  CircleDotIcon,
   CloudRainIcon,
   CloudSunIcon,
+  CookieIcon,
   FlameIcon,
   FrownIcon,
   HeartLucideIcon,
   MoonIcon,
   SmileIcon,
+  SparklesIcon,
   WavesHorizontalIcon,
   ZapIcon,
 } from "@/core/icons";
@@ -20,11 +25,14 @@ import { cx } from "@/core/lib/cx";
 import {
   FLOW_LEVELS,
   MOODS,
+  SYMPTOMS,
   normalizeFlow,
   normalizeMood,
+  normalizeSymptom,
   type CycleLog,
   type FlowLevel,
   type Mood,
+  type Symptom,
 } from "@/core/storage/types";
 
 import styles from "./log-day-panel.module.scss";
@@ -40,10 +48,21 @@ const MOOD_ICONS: Record<Mood, typeof SmileIcon> = {
   SENSITIVE: HeartLucideIcon,
 };
 
+const SYMPTOM_ICONS: Record<Symptom, typeof SmileIcon> = {
+  HEADACHE: BrainIcon,
+  ACNE: SparklesIcon,
+  CRAMPS: ZapIcon,
+  BREAST_TENDERNESS: HeartLucideIcon,
+  BLOATING: CircleDotIcon,
+  NAUSEA: FrownIcon,
+  BACK_PAIN: BoneIcon,
+  CRAVINGS: CookieIcon,
+};
+
 type Draft = {
   flow: FlowLevel | null;
   mood: Mood[];
-  pain: string;
+  symptoms: Symptom[];
   notes: string;
 };
 
@@ -56,14 +75,19 @@ type LogDayPanelProps = {
     date: string;
     flow: FlowLevel | null;
     mood: Mood[];
-    pain: number | null;
+    symptoms: Symptom[];
     notes: string | null;
   }) => Promise<unknown>;
   onDelete: (date: string) => Promise<unknown>;
 };
 
 function isEmptyDraft(draft: Draft) {
-  return !draft.flow && draft.mood.length === 0 && !draft.pain && !draft.notes.trim();
+  return (
+    !draft.flow &&
+    draft.mood.length === 0 &&
+    draft.symptoms.length === 0 &&
+    !draft.notes.trim()
+  );
 }
 
 function toInput(date: string, draft: Draft) {
@@ -71,7 +95,7 @@ function toInput(date: string, draft: Draft) {
     date,
     flow: draft.flow,
     mood: draft.mood,
-    pain: draft.pain ? Number(draft.pain) : null,
+    symptoms: draft.symptoms,
     notes: draft.notes.trim() || null,
   };
 }
@@ -80,7 +104,7 @@ function draftFromLog(log: CycleLog | null): Draft {
   return {
     flow: normalizeFlow(log?.flow),
     mood: normalizeMood(log?.mood),
-    pain: log?.pain?.toString() ?? "",
+    symptoms: normalizeSymptom(log?.symptoms),
     notes: log?.notes ?? "",
   };
 }
@@ -96,7 +120,7 @@ export function LogDayPanel({
   const initial = draftFromLog(log);
   const [flow, setFlow] = useState<FlowLevel | null>(initial.flow);
   const [mood, setMood] = useState<Mood[]>(initial.mood);
-  const [pain, setPain] = useState(initial.pain);
+  const [symptoms, setSymptoms] = useState<Symptom[]>(initial.symptoms);
   const [notes, setNotes] = useState(initial.notes);
   const draftRef = useRef<Draft>(initial);
   const notesTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -136,9 +160,13 @@ export function LogDayPanel({
     persist({ ...draftRef.current, mood: nextMood });
   }
 
-  function updatePain(value: string) {
-    setPain(value);
-    persist({ ...draftRef.current, pain: value });
+  function updateSymptom(value: Symptom) {
+    const current = draftRef.current.symptoms;
+    const nextSymptoms = current.includes(value)
+      ? current.filter((item) => item !== value)
+      : [...current, value];
+    setSymptoms(nextSymptoms);
+    persist({ ...draftRef.current, symptoms: nextSymptoms });
   }
 
   function updateNotes(value: string) {
@@ -237,7 +265,7 @@ export function LogDayPanel({
                   aria-pressed={selected}
                   className={cx(
                     styles.logDayPanel__chip,
-                    styles["logDayPanel__chip--mood"],
+                    styles["logDayPanel__chip--labeled"],
                     selected && styles["logDayPanel__chip--active"],
                   )}
                   onClick={() => updateMood(value)}
@@ -255,18 +283,36 @@ export function LogDayPanel({
           </div>
         </div>
 
-        <label className={styles.logDayPanel__field}>
-          <span className={styles.logDayPanel__label}>Dolor (0–10)</span>
-          <input
-            className={styles.logDayPanel__input}
-            type="number"
-            min={0}
-            max={10}
-            value={pain}
-            onChange={(event) => updatePain(event.target.value)}
-            placeholder="—"
-          />
-        </label>
+        <div className={styles.logDayPanel__field}>
+          <span className={styles.logDayPanel__label}>Síntomas</span>
+          <div className={styles.logDayPanel__chips} role="group" aria-label="Síntomas">
+            {SYMPTOMS.map((value) => {
+              const Icon = SYMPTOM_ICONS[value];
+              const selected = symptoms.includes(value);
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={selected}
+                  className={cx(
+                    styles.logDayPanel__chip,
+                    styles["logDayPanel__chip--labeled"],
+                    selected && styles["logDayPanel__chip--active"],
+                  )}
+                  onClick={() => updateSymptom(value)}
+                >
+                  <Icon
+                    color={selected ? "#fff" : "#F54927"}
+                    width={18}
+                    height={18}
+                    aria-hidden="true"
+                  />
+                  {SYMPTOM_LABELS[value]}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         <label className={styles.logDayPanel__field}>
           <span className={styles.logDayPanel__label}>Notas</span>

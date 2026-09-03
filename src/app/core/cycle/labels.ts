@@ -1,4 +1,4 @@
-import type { FlowLevel, Mood } from "@/core/storage/types";
+import type { FlowLevel, Mood, Symptom } from "@/core/storage/types";
 
 export const FLOW_LABELS: Record<FlowLevel, string> = {
   SPOTTING: "Manchado",
@@ -16,6 +16,17 @@ export const MOOD_LABELS: Record<Mood, string> = {
   TIRED: "Cansada",
   ENERGETIC: "Energética",
   SENSITIVE: "Sensible",
+};
+
+export const SYMPTOM_LABELS: Record<Symptom, string> = {
+  HEADACHE: "Dolor de cabeza",
+  ACNE: "Acné",
+  CRAMPS: "Cólicos",
+  BREAST_TENDERNESS: "Sensibilidad en pechos",
+  BLOATING: "Hinchazón",
+  NAUSEA: "Náuseas",
+  BACK_PAIN: "Dolor de espalda",
+  CRAVINGS: "Antojo",
 };
 
 export function getFirstName(name?: string | null): string | null {

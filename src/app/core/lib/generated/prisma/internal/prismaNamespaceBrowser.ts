@@ -94,7 +94,7 @@ export const CycleLogScalarFieldEnum = {
   date: 'date',
   flow: 'flow',
   mood: 'mood',
-  pain: 'pain',
+  symptoms: 'symptoms',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

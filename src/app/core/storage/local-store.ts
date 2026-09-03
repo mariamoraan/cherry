@@ -3,6 +3,7 @@ import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import {
   normalizeFlow,
   normalizeMood,
+  normalizeSymptom,
   parseDateKey,
   toDateKey,
   type CycleLog,
@@ -46,7 +47,7 @@ function createLog(input: CycleLogInput, existing?: CycleLog): CycleLog {
     date: toDateKey(input.date),
     flow: normalizeFlow(pick(input.flow, existing?.flow ?? null)),
     mood: normalizeMood(pick(input.mood, existing?.mood ?? [])),
-    pain: pick(input.pain, existing?.pain ?? null),
+    symptoms: normalizeSymptom(pick(input.symptoms, existing?.symptoms ?? [])),
     notes: pick(input.notes, existing?.notes ?? null),
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
@@ -70,6 +71,7 @@ export async function getLocalCycleLogs(
       ...log,
       flow: normalizeFlow(log.flow),
       mood: normalizeMood(log.mood),
+      symptoms: normalizeSymptom(log.symptoms),
     }))
     .sort((a, b) => b.date.localeCompare(a.date));
 }

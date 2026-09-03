@@ -36,12 +36,32 @@ export function normalizeMood(value: unknown): Mood[] {
   );
 }
 
+export const SYMPTOMS = [
+  "HEADACHE",
+  "ACNE",
+  "CRAMPS",
+  "BREAST_TENDERNESS",
+  "BLOATING",
+  "NAUSEA",
+  "BACK_PAIN",
+  "CRAVINGS",
+] as const;
+
+export type Symptom = (typeof SYMPTOMS)[number];
+
+export function normalizeSymptom(value: unknown): Symptom[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is Symptom =>
+    (SYMPTOMS as readonly string[]).includes(item as string),
+  );
+}
+
 export type CycleLog = {
   id: string;
   date: string;
   flow: FlowLevel | null;
   mood: Mood[];
-  pain: number | null;
+  symptoms: Symptom[];
   notes: string | null;
   createdAt: string;
   updatedAt: string;
@@ -51,7 +71,7 @@ export type CycleLogInput = {
   date: string;
   flow?: FlowLevel | null;
   mood?: Mood[];
-  pain?: number | null;
+  symptoms?: Symptom[];
   notes?: string | null;
 };
 

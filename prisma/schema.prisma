@@ -27,6 +27,17 @@ enum Mood {
   SENSITIVE
 }
 
+enum Symptom {
+  HEADACHE
+  ACNE
+  CRAMPS
+  BREAST_TENDERNESS
+  BLOATING
+  NAUSEA
+  BACK_PAIN
+  CRAVINGS
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -48,7 +59,7 @@ model CycleLog {
   date      DateTime   @db.Date
   flow      FlowLevel?
   mood      Mood[]     @default([])
-  pain      Int?
+  symptoms  Symptom[]  @default([])
   notes     String?
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt

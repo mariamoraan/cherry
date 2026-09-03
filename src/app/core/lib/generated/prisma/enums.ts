@@ -32,3 +32,17 @@ export const Mood = {
 } as const
 
 export type Mood = (typeof Mood)[keyof typeof Mood]
+
+
+export const Symptom = {
+  HEADACHE: 'HEADACHE',
+  ACNE: 'ACNE',
+  CRAMPS: 'CRAMPS',
+  BREAST_TENDERNESS: 'BREAST_TENDERNESS',
+  BLOATING: 'BLOATING',
+  NAUSEA: 'NAUSEA',
+  BACK_PAIN: 'BACK_PAIN',
+  CRAVINGS: 'CRAVINGS'
+} as const
+
+export type Symptom = (typeof Symptom)[keyof typeof Symptom]

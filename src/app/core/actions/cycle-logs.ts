@@ -4,8 +4,10 @@ import { auth } from "@/auth";
 import { db } from "@/core/lib/db";
 import {
   MOODS,
+  SYMPTOMS,
   normalizeFlow,
   normalizeMood,
+  normalizeSymptom,
   parseDateKey,
   toDateKey,
   type CycleLog,
@@ -22,12 +24,13 @@ const flowLevelSchema = z.enum([
 ]);
 
 const moodSchema = z.enum(MOODS);
+const symptomSchema = z.enum(SYMPTOMS);
 
 const cycleLogInputSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   flow: flowLevelSchema.nullable().optional(),
   mood: z.array(moodSchema).optional(),
-  pain: z.number().int().min(0).max(10).nullable().optional(),
+  symptoms: z.array(symptomSchema).optional(),
   notes: z.string().max(1000).nullable().optional(),
 });
 
@@ -36,7 +39,7 @@ const cycleLogSchema = z.object({
   date: z.string(),
   flow: flowLevelSchema.nullable(),
   mood: z.array(moodSchema),
-  pain: z.number().nullable(),
+  symptoms: z.array(symptomSchema),
   notes: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -62,7 +65,7 @@ function toCycleLog(record: {
   date: Date;
   flow: string | null;
   mood: string[];
-  pain: number | null;
+  symptoms: string[];
   notes: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -72,7 +75,7 @@ function toCycleLog(record: {
     date: toDateKey(record.date),
     flow: normalizeFlow(record.flow),
     mood: normalizeMood(record.mood),
-    pain: record.pain,
+    symptoms: normalizeSymptom(record.symptoms),
     notes: record.notes,
     createdAt: record.createdAt.toISOString(),
     updatedAt: record.updatedAt.toISOString(),
@@ -108,6 +111,7 @@ export async function upsertCycleLog(input: CycleLogInput): Promise<CycleLog> {
   const data = cycleLogInputSchema.parse(input);
   const date = parseDateKey(data.date);
   const mood = normalizeMood(data.mood);
+  const symptoms = normalizeSymptom(data.symptoms);
 
   const record = await db.cycleLog.upsert({
     where: {
@@ -118,13 +122,13 @@ export async function upsertCycleLog(input: CycleLogInput): Promise<CycleLog> {
       date,
       flow: normalizeFlow(data.flow),
       mood,
-      pain: data.pain ?? null,
+      symptoms,
       notes: data.notes ?? null,
     },
     update: {
       flow: normalizeFlow(data.flow),
       mood: { set: mood },
-      pain: data.pain ?? null,
+      symptoms: { set: symptoms },
       notes: data.notes ?? null,
     },
   });
@@ -162,13 +166,13 @@ export async function migrateLocalLogs(logs: CycleLog[]): Promise<number> {
           date: parseDateKey(log.date),
           flow: normalizeFlow(log.flow),
           mood: normalizeMood(log.mood),
-          pain: log.pain,
+          symptoms: normalizeSymptom(log.symptoms),
           notes: log.notes,
         },
         update: {
           flow: normalizeFlow(log.flow),
           mood: { set: normalizeMood(log.mood) },
-          pain: log.pain,
+          symptoms: { set: normalizeSymptom(log.symptoms) },
           notes: log.notes,
         },
       }),

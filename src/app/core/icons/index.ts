@@ -10,4 +10,9 @@ export {
   Moon as MoonIcon,
   Zap as ZapIcon,
   Heart as HeartLucideIcon,
+  Brain as BrainIcon,
+  Sparkles as SparklesIcon,
+  CircleDot as CircleDotIcon,
+  Bone as BoneIcon,
+  Cookie as CookieIcon,
 } from "lucide-react";

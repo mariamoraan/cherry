@@ -850,7 +850,7 @@ export const CycleLogScalarFieldEnum = {
   date: 'date',
   flow: 'flow',
   mood: 'mood',
-  pain: 'pain',
+  symptoms: 'symptoms',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -979,6 +979,20 @@ export type ListEnumMoodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
  * Reference to a field of type 'Mood'
  */
 export type EnumMoodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Mood'>
+    
+
+
+/**
+ * Reference to a field of type 'Symptom[]'
+ */
+export type ListEnumSymptomFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Symptom[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Symptom'
+ */
+export type EnumSymptomFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Symptom'>
     
 
 

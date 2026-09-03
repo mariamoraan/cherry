@@ -20,18 +20,8 @@ export type CycleLogModel = runtime.Types.Result.DefaultSelection<Prisma.$CycleL
 
 export type AggregateCycleLog = {
   _count: CycleLogCountAggregateOutputType | null
-  _avg: CycleLogAvgAggregateOutputType | null
-  _sum: CycleLogSumAggregateOutputType | null
   _min: CycleLogMinAggregateOutputType | null
   _max: CycleLogMaxAggregateOutputType | null
-}
-
-export type CycleLogAvgAggregateOutputType = {
-  pain: number | null
-}
-
-export type CycleLogSumAggregateOutputType = {
-  pain: number | null
 }
 
 export type CycleLogMinAggregateOutputType = {
@@ -39,7 +29,6 @@ export type CycleLogMinAggregateOutputType = {
   userId: string | null
   date: Date | null
   flow: $Enums.FlowLevel | null
-  pain: number | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -50,7 +39,6 @@ export type CycleLogMaxAggregateOutputType = {
   userId: string | null
   date: Date | null
   flow: $Enums.FlowLevel | null
-  pain: number | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -62,7 +50,7 @@ export type CycleLogCountAggregateOutputType = {
   date: number
   flow: number
   mood: number
-  pain: number
+  symptoms: number
   notes: number
   createdAt: number
   updatedAt: number
@@ -70,20 +58,11 @@ export type CycleLogCountAggregateOutputType = {
 }
 
 
-export type CycleLogAvgAggregateInputType = {
-  pain?: true
-}
-
-export type CycleLogSumAggregateInputType = {
-  pain?: true
-}
-
 export type CycleLogMinAggregateInputType = {
   id?: true
   userId?: true
   date?: true
   flow?: true
-  pain?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -94,7 +73,6 @@ export type CycleLogMaxAggregateInputType = {
   userId?: true
   date?: true
   flow?: true
-  pain?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -106,7 +84,7 @@ export type CycleLogCountAggregateInputType = {
   date?: true
   flow?: true
   mood?: true
-  pain?: true
+  symptoms?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -151,18 +129,6 @@ export type CycleLogAggregateArgs<ExtArgs extends runtime.Types.Extensions.Inter
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: CycleLogAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: CycleLogSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: CycleLogMinAggregateInputType
@@ -193,8 +159,6 @@ export type CycleLogGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   _count?: CycleLogCountAggregateInputType | true
-  _avg?: CycleLogAvgAggregateInputType
-  _sum?: CycleLogSumAggregateInputType
   _min?: CycleLogMinAggregateInputType
   _max?: CycleLogMaxAggregateInputType
 }
@@ -205,13 +169,11 @@ export type CycleLogGroupByOutputType = {
   date: Date
   flow: $Enums.FlowLevel | null
   mood: $Enums.Mood[]
-  pain: number | null
+  symptoms: $Enums.Symptom[]
   notes: string | null
   createdAt: Date
   updatedAt: Date
   _count: CycleLogCountAggregateOutputType | null
-  _avg: CycleLogAvgAggregateOutputType | null
-  _sum: CycleLogSumAggregateOutputType | null
   _min: CycleLogMinAggregateOutputType | null
   _max: CycleLogMaxAggregateOutputType | null
 }
@@ -240,7 +202,7 @@ export type CycleLogWhereInput = {
   date?: Prisma.DateTimeFilter<"CycleLog"> | Date | string
   flow?: Prisma.EnumFlowLevelNullableFilter<"CycleLog"> | $Enums.FlowLevel | null
   mood?: Prisma.EnumMoodNullableListFilter<"CycleLog">
-  pain?: Prisma.IntNullableFilter<"CycleLog"> | number | null
+  symptoms?: Prisma.EnumSymptomNullableListFilter<"CycleLog">
   notes?: Prisma.StringNullableFilter<"CycleLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CycleLog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CycleLog"> | Date | string
@@ -253,7 +215,7 @@ export type CycleLogOrderByWithRelationInput = {
   date?: Prisma.SortOrder
   flow?: Prisma.SortOrderInput | Prisma.SortOrder
   mood?: Prisma.SortOrder
-  pain?: Prisma.SortOrderInput | Prisma.SortOrder
+  symptoms?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -270,7 +232,7 @@ export type CycleLogWhereUniqueInput = Prisma.AtLeast<{
   date?: Prisma.DateTimeFilter<"CycleLog"> | Date | string
   flow?: Prisma.EnumFlowLevelNullableFilter<"CycleLog"> | $Enums.FlowLevel | null
   mood?: Prisma.EnumMoodNullableListFilter<"CycleLog">
-  pain?: Prisma.IntNullableFilter<"CycleLog"> | number | null
+  symptoms?: Prisma.EnumSymptomNullableListFilter<"CycleLog">
   notes?: Prisma.StringNullableFilter<"CycleLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CycleLog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CycleLog"> | Date | string
@@ -283,15 +245,13 @@ export type CycleLogOrderByWithAggregationInput = {
   date?: Prisma.SortOrder
   flow?: Prisma.SortOrderInput | Prisma.SortOrder
   mood?: Prisma.SortOrder
-  pain?: Prisma.SortOrderInput | Prisma.SortOrder
+  symptoms?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CycleLogCountOrderByAggregateInput
-  _avg?: Prisma.CycleLogAvgOrderByAggregateInput
   _max?: Prisma.CycleLogMaxOrderByAggregateInput
   _min?: Prisma.CycleLogMinOrderByAggregateInput
-  _sum?: Prisma.CycleLogSumOrderByAggregateInput
 }
 
 export type CycleLogScalarWhereWithAggregatesInput = {
@@ -303,7 +263,7 @@ export type CycleLogScalarWhereWithAggregatesInput = {
   date?: Prisma.DateTimeWithAggregatesFilter<"CycleLog"> | Date | string
   flow?: Prisma.EnumFlowLevelNullableWithAggregatesFilter<"CycleLog"> | $Enums.FlowLevel | null
   mood?: Prisma.EnumMoodNullableListFilter<"CycleLog">
-  pain?: Prisma.IntNullableWithAggregatesFilter<"CycleLog"> | number | null
+  symptoms?: Prisma.EnumSymptomNullableListFilter<"CycleLog">
   notes?: Prisma.StringNullableWithAggregatesFilter<"CycleLog"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CycleLog"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CycleLog"> | Date | string
@@ -314,7 +274,7 @@ export type CycleLogCreateInput = {
   date: Date | string
   flow?: $Enums.FlowLevel | null
   mood?: Prisma.CycleLogCreatemoodInput | $Enums.Mood[]
-  pain?: number | null
+  symptoms?: Prisma.CycleLogCreatesymptomsInput | $Enums.Symptom[]
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -327,7 +287,7 @@ export type CycleLogUncheckedCreateInput = {
   date: Date | string
   flow?: $Enums.FlowLevel | null
   mood?: Prisma.CycleLogCreatemoodInput | $Enums.Mood[]
-  pain?: number | null
+  symptoms?: Prisma.CycleLogCreatesymptomsInput | $Enums.Symptom[]
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -338,7 +298,7 @@ export type CycleLogUpdateInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flow?: Prisma.NullableEnumFlowLevelFieldUpdateOperationsInput | $Enums.FlowLevel | null
   mood?: Prisma.CycleLogUpdatemoodInput | $Enums.Mood[]
-  pain?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  symptoms?: Prisma.CycleLogUpdatesymptomsInput | $Enums.Symptom[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -351,7 +311,7 @@ export type CycleLogUncheckedUpdateInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flow?: Prisma.NullableEnumFlowLevelFieldUpdateOperationsInput | $Enums.FlowLevel | null
   mood?: Prisma.CycleLogUpdatemoodInput | $Enums.Mood[]
-  pain?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  symptoms?: Prisma.CycleLogUpdatesymptomsInput | $Enums.Symptom[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -363,7 +323,7 @@ export type CycleLogCreateManyInput = {
   date: Date | string
   flow?: $Enums.FlowLevel | null
   mood?: Prisma.CycleLogCreatemoodInput | $Enums.Mood[]
-  pain?: number | null
+  symptoms?: Prisma.CycleLogCreatesymptomsInput | $Enums.Symptom[]
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -374,7 +334,7 @@ export type CycleLogUpdateManyMutationInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flow?: Prisma.NullableEnumFlowLevelFieldUpdateOperationsInput | $Enums.FlowLevel | null
   mood?: Prisma.CycleLogUpdatemoodInput | $Enums.Mood[]
-  pain?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  symptoms?: Prisma.CycleLogUpdatesymptomsInput | $Enums.Symptom[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -386,7 +346,7 @@ export type CycleLogUncheckedUpdateManyInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flow?: Prisma.NullableEnumFlowLevelFieldUpdateOperationsInput | $Enums.FlowLevel | null
   mood?: Prisma.CycleLogUpdatemoodInput | $Enums.Mood[]
-  pain?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  symptoms?: Prisma.CycleLogUpdatesymptomsInput | $Enums.Symptom[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -410,6 +370,14 @@ export type EnumMoodNullableListFilter<$PrismaModel = never> = {
   isEmpty?: boolean
 }
 
+export type EnumSymptomNullableListFilter<$PrismaModel = never> = {
+  equals?: $Enums.Symptom[] | Prisma.ListEnumSymptomFieldRefInput<$PrismaModel> | null
+  has?: $Enums.Symptom | Prisma.EnumSymptomFieldRefInput<$PrismaModel> | null
+  hasEvery?: $Enums.Symptom[] | Prisma.ListEnumSymptomFieldRefInput<$PrismaModel>
+  hasSome?: $Enums.Symptom[] | Prisma.ListEnumSymptomFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
+}
+
 export type CycleLogUserIdDateCompoundUniqueInput = {
   userId: string
   date: Date | string
@@ -421,14 +389,10 @@ export type CycleLogCountOrderByAggregateInput = {
   date?: Prisma.SortOrder
   flow?: Prisma.SortOrder
   mood?: Prisma.SortOrder
-  pain?: Prisma.SortOrder
+  symptoms?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-}
-
-export type CycleLogAvgOrderByAggregateInput = {
-  pain?: Prisma.SortOrder
 }
 
 export type CycleLogMaxOrderByAggregateInput = {
@@ -436,7 +400,6 @@ export type CycleLogMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   date?: Prisma.SortOrder
   flow?: Prisma.SortOrder
-  pain?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -447,14 +410,9 @@ export type CycleLogMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   date?: Prisma.SortOrder
   flow?: Prisma.SortOrder
-  pain?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-}
-
-export type CycleLogSumOrderByAggregateInput = {
-  pain?: Prisma.SortOrder
 }
 
 export type CycleLogCreateNestedManyWithoutUserInput = {
@@ -503,6 +461,10 @@ export type CycleLogCreatemoodInput = {
   set: $Enums.Mood[]
 }
 
+export type CycleLogCreatesymptomsInput = {
+  set: $Enums.Symptom[]
+}
+
 export type NullableEnumFlowLevelFieldUpdateOperationsInput = {
   set?: $Enums.FlowLevel | null
 }
@@ -512,12 +474,9 @@ export type CycleLogUpdatemoodInput = {
   push?: $Enums.Mood | $Enums.Mood[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type CycleLogUpdatesymptomsInput = {
+  set?: $Enums.Symptom[]
+  push?: $Enums.Symptom | $Enums.Symptom[]
 }
 
 export type CycleLogCreateWithoutUserInput = {
@@ -525,7 +484,7 @@ export type CycleLogCreateWithoutUserInput = {
   date: Date | string
   flow?: $Enums.FlowLevel | null
   mood?: Prisma.CycleLogCreatemoodInput | $Enums.Mood[]
-  pain?: number | null
+  symptoms?: Prisma.CycleLogCreatesymptomsInput | $Enums.Symptom[]
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -536,7 +495,7 @@ export type CycleLogUncheckedCreateWithoutUserInput = {
   date: Date | string
   flow?: $Enums.FlowLevel | null
   mood?: Prisma.CycleLogCreatemoodInput | $Enums.Mood[]
-  pain?: number | null
+  symptoms?: Prisma.CycleLogCreatesymptomsInput | $Enums.Symptom[]
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -577,7 +536,7 @@ export type CycleLogScalarWhereInput = {
   date?: Prisma.DateTimeFilter<"CycleLog"> | Date | string
   flow?: Prisma.EnumFlowLevelNullableFilter<"CycleLog"> | $Enums.FlowLevel | null
   mood?: Prisma.EnumMoodNullableListFilter<"CycleLog">
-  pain?: Prisma.IntNullableFilter<"CycleLog"> | number | null
+  symptoms?: Prisma.EnumSymptomNullableListFilter<"CycleLog">
   notes?: Prisma.StringNullableFilter<"CycleLog"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CycleLog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CycleLog"> | Date | string
@@ -588,7 +547,7 @@ export type CycleLogCreateManyUserInput = {
   date: Date | string
   flow?: $Enums.FlowLevel | null
   mood?: Prisma.CycleLogCreatemoodInput | $Enums.Mood[]
-  pain?: number | null
+  symptoms?: Prisma.CycleLogCreatesymptomsInput | $Enums.Symptom[]
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -599,7 +558,7 @@ export type CycleLogUpdateWithoutUserInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flow?: Prisma.NullableEnumFlowLevelFieldUpdateOperationsInput | $Enums.FlowLevel | null
   mood?: Prisma.CycleLogUpdatemoodInput | $Enums.Mood[]
-  pain?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  symptoms?: Prisma.CycleLogUpdatesymptomsInput | $Enums.Symptom[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -610,7 +569,7 @@ export type CycleLogUncheckedUpdateWithoutUserInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flow?: Prisma.NullableEnumFlowLevelFieldUpdateOperationsInput | $Enums.FlowLevel | null
   mood?: Prisma.CycleLogUpdatemoodInput | $Enums.Mood[]
-  pain?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  symptoms?: Prisma.CycleLogUpdatesymptomsInput | $Enums.Symptom[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -621,7 +580,7 @@ export type CycleLogUncheckedUpdateManyWithoutUserInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flow?: Prisma.NullableEnumFlowLevelFieldUpdateOperationsInput | $Enums.FlowLevel | null
   mood?: Prisma.CycleLogUpdatemoodInput | $Enums.Mood[]
-  pain?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  symptoms?: Prisma.CycleLogUpdatesymptomsInput | $Enums.Symptom[]
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -635,7 +594,7 @@ export type CycleLogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   date?: boolean
   flow?: boolean
   mood?: boolean
-  pain?: boolean
+  symptoms?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -648,7 +607,7 @@ export type CycleLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   date?: boolean
   flow?: boolean
   mood?: boolean
-  pain?: boolean
+  symptoms?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -661,7 +620,7 @@ export type CycleLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   date?: boolean
   flow?: boolean
   mood?: boolean
-  pain?: boolean
+  symptoms?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -674,13 +633,13 @@ export type CycleLogSelectScalar = {
   date?: boolean
   flow?: boolean
   mood?: boolean
-  pain?: boolean
+  symptoms?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CycleLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "date" | "flow" | "mood" | "pain" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["cycleLog"]>
+export type CycleLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "date" | "flow" | "mood" | "symptoms" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["cycleLog"]>
 export type CycleLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -702,7 +661,7 @@ export type $CycleLogPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     date: Date
     flow: $Enums.FlowLevel | null
     mood: $Enums.Mood[]
-    pain: number | null
+    symptoms: $Enums.Symptom[]
     notes: string | null
     createdAt: Date
     updatedAt: Date
@@ -1135,7 +1094,7 @@ export interface CycleLogFieldRefs {
   readonly date: Prisma.FieldRef<"CycleLog", 'DateTime'>
   readonly flow: Prisma.FieldRef<"CycleLog", 'FlowLevel'>
   readonly mood: Prisma.FieldRef<"CycleLog", 'Mood[]'>
-  readonly pain: Prisma.FieldRef<"CycleLog", 'Int'>
+  readonly symptoms: Prisma.FieldRef<"CycleLog", 'Symptom[]'>
   readonly notes: Prisma.FieldRef<"CycleLog", 'String'>
   readonly createdAt: Prisma.FieldRef<"CycleLog", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"CycleLog", 'DateTime'>

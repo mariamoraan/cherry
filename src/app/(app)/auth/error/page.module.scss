@@ -4,7 +4,8 @@
   align-items: center;
   justify-content: center;
   background-color: #fafafa;
-  padding: 3rem 1rem;
+  padding: calc(3rem + env(safe-area-inset-top, 0px)) 1rem
+    calc(3rem + env(safe-area-inset-bottom, 0px));
 
   @media (prefers-color-scheme: dark) {
     background-color: #09090b;

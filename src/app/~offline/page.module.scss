@@ -5,7 +5,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  padding: 2rem 1.5rem;
+  padding: calc(2rem + env(safe-area-inset-top, 0px)) 1.5rem
+    calc(2rem + env(safe-area-inset-bottom, 0px));
   text-align: center;
   background:
     radial-gradient(ellipse 80% 50% at 50% -20%, rgb(224 122 122 / 0.22), transparent),

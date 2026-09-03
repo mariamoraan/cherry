@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: siteConfig.name,
   },
   formatDetection: {
@@ -39,6 +39,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: siteConfig.themeColor,
+  colorScheme: "light",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",

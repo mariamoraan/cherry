@@ -14,6 +14,7 @@ import {
 import { cx } from "@/core/lib/cx";
 
 import styles from "./calendar-month.module.scss";
+import { ChevronLeftIcon, ChevronRightIcon } from "../../icons";
 
 type CalendarMonthProps = {
   monthKey: string;
@@ -55,7 +56,7 @@ export function CalendarMonth({
           onClick={onPrevMonth}
           aria-label="Mes anterior"
         >
-          <Chevron direction="left" />
+          <ChevronLeftIcon />
         </button>
         <h1 className={styles.calendarMonth__title}>{formatMonthYear(monthKey)}</h1>
         <button
@@ -64,7 +65,7 @@ export function CalendarMonth({
           onClick={onNextMonth}
           aria-label="Mes siguiente"
         >
-          <Chevron direction="right" />
+          <ChevronRightIcon />
         </button>
       </div>
       <div className={styles.calendarMonth__weekdays}>
@@ -100,19 +101,5 @@ function dayClassName(day: CalendarDay): string {
     day.isVisualEnd && styles["calendarMonth__day--visualEnd"],
     day.isToday && styles["calendarMonth__day--today"],
     day.isSelected && styles["calendarMonth__day--selected"],
-  );
-}
-
-function Chevron({ direction }: { direction: "left" | "right" }) {
-  return (
-    <svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true">
-      <path
-        d={direction === "left" ? "M10 4 6 8l4 4" : "M6 4l4 4-4 4"}
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }

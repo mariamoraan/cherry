@@ -14,6 +14,7 @@ import {
   CookieIcon,
   FlameIcon,
   FrownIcon,
+  HeartIcon,
   HeartLucideIcon,
   MoonIcon,
   SmileIcon,
@@ -327,18 +328,5 @@ export function LogDayPanel({
         </label>
       </div>
     </section>
-  );
-}
-
-function HeartIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
-      <path
-        d="M12 20s-7-4.4-9.2-8.2C1.2 9 2.2 5.8 5.4 5.2c1.8-.3 3.4.5 4.4 1.8C10.8 5.7 12.4 4.9 14.2 5.2c3.2.6 4.2 3.8 2.6 6.6C19 15.6 12 20 12 20Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }

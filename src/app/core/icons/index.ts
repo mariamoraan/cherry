@@ -15,4 +15,7 @@ export {
   CircleDot as CircleDotIcon,
   Bone as BoneIcon,
   Cookie as CookieIcon,
+  HeartIcon as HeartIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
 } from "lucide-react";

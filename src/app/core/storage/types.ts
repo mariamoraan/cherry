@@ -1,12 +1,20 @@
 export const FLOW_LEVELS = [
-  "NONE",
-  "SPOTTING",
   "LIGHT",
+  "SPOTTING",
   "MEDIUM",
   "HEAVY",
 ] as const;
 
 export type FlowLevel = (typeof FLOW_LEVELS)[number];
+
+export function normalizeFlow(
+  flow: string | null | undefined,
+): FlowLevel | null {
+  if (!flow) return null;
+  return (FLOW_LEVELS as readonly string[]).includes(flow)
+    ? (flow as FlowLevel)
+    : null;
+}
 
 export type CycleLog = {
   id: string;

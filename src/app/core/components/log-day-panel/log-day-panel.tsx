@@ -6,12 +6,18 @@ import Link from "next/link";
 
 import { FLOW_LABELS } from "@/core/cycle/labels";
 import { cx } from "@/core/lib/cx";
-import { FLOW_LEVELS, type CycleLog, type FlowLevel } from "@/core/storage/types";
+import {
+  FLOW_LEVELS,
+  normalizeFlow,
+  type CycleLog,
+  type FlowLevel,
+} from "@/core/storage/types";
+import { WavesHorizontalIcon } from "@/core/icons";
 
 import styles from "./log-day-panel.module.scss";
 
 type Draft = {
-  flow: FlowLevel;
+  flow: FlowLevel | null;
   mood: string;
   pain: string;
   notes: string;
@@ -24,13 +30,17 @@ type LogDayPanelProps = {
   isSaving: boolean;
   onSave: (input: {
     date: string;
-    flow: FlowLevel;
+    flow: FlowLevel | null;
     mood: number | null;
     pain: number | null;
     notes: string | null;
   }) => Promise<unknown>;
   onDelete: (date: string) => Promise<unknown>;
 };
+
+function isEmptyDraft(draft: Draft) {
+  return !draft.flow && !draft.mood && !draft.pain && !draft.notes.trim();
+}
 
 function toInput(date: string, draft: Draft) {
   return {
@@ -50,21 +60,33 @@ export function LogDayPanel({
   onSave,
   onDelete,
 }: LogDayPanelProps) {
-  const [flow, setFlow] = useState<FlowLevel>(log?.flow ?? "NONE");
+  const [flow, setFlow] = useState<FlowLevel | null>(
+    normalizeFlow(log?.flow),
+  );
   const [mood, setMood] = useState(log?.mood?.toString() ?? "");
   const [pain, setPain] = useState(log?.pain?.toString() ?? "");
   const [notes, setNotes] = useState(log?.notes ?? "");
   const draftRef = useRef<Draft>({ flow, mood, pain, notes });
   const notesTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasRecordRef = useRef(!!log);
 
   function persist(next: Draft) {
     draftRef.current = next;
+    if (isEmptyDraft(next)) {
+      if (hasRecordRef.current) {
+        hasRecordRef.current = false;
+        void onDelete(date);
+      }
+      return;
+    }
+    hasRecordRef.current = true;
     void onSave(toInput(date, next));
   }
 
   function updateFlow(level: FlowLevel) {
-    setFlow(level);
-    persist({ ...draftRef.current, flow: level });
+    const nextFlow = flow === level ? null : level;
+    setFlow(nextFlow);
+    persist({ ...draftRef.current, flow: nextFlow });
   }
 
   function updateMood(value: string) {
@@ -93,6 +115,19 @@ export function LogDayPanel({
     }
     persist(draftRef.current);
   }
+
+  const getFlowIconSize = (level: FlowLevel): number => {
+    switch (level) {
+      case "LIGHT":
+        return 16;
+      case "SPOTTING":
+        return 20;
+      case "MEDIUM":
+        return 24;
+      case "HEAVY":
+        return 28;
+    }
+  };
 
   return (
     <section className={styles.logDayPanel} aria-labelledby="log-day-title">
@@ -123,18 +158,25 @@ export function LogDayPanel({
       <div className={styles.logDayPanel__form}>
         <div className={styles.logDayPanel__field}>
           <span className={styles.logDayPanel__label}>Flujo</span>
-          <div className={styles.logDayPanel__chips}>
+          <div className={styles.logDayPanel__chips} role="group" aria-label="Flujo">
             {FLOW_LEVELS.map((level) => (
               <button
                 key={level}
                 type="button"
+                aria-label={FLOW_LABELS[level]}
+                aria-pressed={flow === level}
                 className={cx(
                   styles.logDayPanel__chip,
                   flow === level && styles["logDayPanel__chip--active"],
                 )}
                 onClick={() => updateFlow(level)}
               >
-                {FLOW_LABELS[level]}
+                <WavesHorizontalIcon 
+                className="logDayPanel__chip__icon" 
+                color={flow === level ? "#fff" : "#F54927"} 
+                width={getFlowIconSize(level)}
+                height={getFlowIconSize(level)}
+                />
               </button>
             ))}
           </div>

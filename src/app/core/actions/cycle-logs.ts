@@ -2,8 +2,13 @@
 
 import { auth } from "@/auth";
 import { db } from "@/core/lib/db";
-import type { CycleLog, CycleLogInput, FlowLevel } from "@/core/storage/types";
-import { parseDateKey, toDateKey } from "@/core/storage/types";
+import {
+  normalizeFlow,
+  parseDateKey,
+  toDateKey,
+  type CycleLog,
+  type CycleLogInput,
+} from "@/core/storage/types";
 import { z } from "zod";
 
 const flowLevelSchema = z.enum([
@@ -51,7 +56,7 @@ async function requireUserId(): Promise<string> {
 function toCycleLog(record: {
   id: string;
   date: Date;
-  flow: FlowLevel | null;
+  flow: string | null;
   mood: number | null;
   pain: number | null;
   notes: string | null;
@@ -61,7 +66,7 @@ function toCycleLog(record: {
   return {
     id: record.id,
     date: toDateKey(record.date),
-    flow: record.flow,
+    flow: normalizeFlow(record.flow),
     mood: record.mood,
     pain: record.pain,
     notes: record.notes,
@@ -106,13 +111,13 @@ export async function upsertCycleLog(input: CycleLogInput): Promise<CycleLog> {
     create: {
       userId,
       date,
-      flow: data.flow ?? null,
+      flow: normalizeFlow(data.flow),
       mood: data.mood ?? null,
       pain: data.pain ?? null,
       notes: data.notes ?? null,
     },
     update: {
-      flow: data.flow ?? null,
+      flow: normalizeFlow(data.flow),
       mood: data.mood ?? null,
       pain: data.pain ?? null,
       notes: data.notes ?? null,
@@ -150,13 +155,13 @@ export async function migrateLocalLogs(logs: CycleLog[]): Promise<number> {
         create: {
           userId,
           date: parseDateKey(log.date),
-          flow: log.flow,
+          flow: normalizeFlow(log.flow),
           mood: log.mood,
           pain: log.pain,
           notes: log.notes,
         },
         update: {
-          flow: log.flow,
+          flow: normalizeFlow(log.flow),
           mood: log.mood,
           pain: log.pain,
           notes: log.notes,

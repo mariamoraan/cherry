@@ -84,18 +84,21 @@
 }
 
 .logDayPanel__chip {
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: var(--color-track);
-  padding: 0.4rem 0.7rem;
+  border: 2px solid #C82909;
+  border-radius: 8px;
+  background: white;
+  padding: 0.7rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
 }
 
 .logDayPanel__chip--active {
-  background: var(--color-pink);
-  color: #fff;
+  background: #C82909;
 }
 
 .logDayPanel__input,

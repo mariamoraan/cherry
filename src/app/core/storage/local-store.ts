@@ -1,7 +1,12 @@
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 
-import type { CycleLog, CycleLogInput } from "./types";
-import { parseDateKey, toDateKey } from "./types";
+import {
+  normalizeFlow,
+  parseDateKey,
+  toDateKey,
+  type CycleLog,
+  type CycleLogInput,
+} from "./types";
 
 const DB_NAME = "cherry";
 const DB_VERSION = 1;
@@ -29,15 +34,19 @@ function getDb() {
   return dbPromise;
 }
 
+function pick<T>(incoming: T | undefined, fallback: T): T {
+  return incoming !== undefined ? incoming : fallback;
+}
+
 function createLog(input: CycleLogInput, existing?: CycleLog): CycleLog {
   const now = new Date().toISOString();
   return {
     id: existing?.id ?? crypto.randomUUID(),
     date: toDateKey(input.date),
-    flow: input.flow ?? existing?.flow ?? null,
-    mood: input.mood ?? existing?.mood ?? null,
-    pain: input.pain ?? existing?.pain ?? null,
-    notes: input.notes ?? existing?.notes ?? null,
+    flow: normalizeFlow(pick(input.flow, existing?.flow ?? null)),
+    mood: pick(input.mood, existing?.mood ?? null),
+    pain: pick(input.pain, existing?.pain ?? null),
+    notes: pick(input.notes, existing?.notes ?? null),
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
   };
@@ -56,6 +65,7 @@ export async function getLocalCycleLogs(
       if (to && log.date > to) return false;
       return true;
     })
+    .map((log) => ({ ...log, flow: normalizeFlow(log.flow) }))
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 

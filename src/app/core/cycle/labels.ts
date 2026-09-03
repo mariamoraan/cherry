@@ -1,7 +1,6 @@
 import type { FlowLevel } from "@/core/storage/types";
 
 export const FLOW_LABELS: Record<FlowLevel, string> = {
-  NONE: "Ninguno",
   SPOTTING: "Manchado",
   LIGHT: "Ligero",
   MEDIUM: "Moderado",

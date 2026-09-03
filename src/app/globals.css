@@ -13,12 +13,9 @@
   --color-sky-soft: #d9e4eb;
   --color-navy: #2a2e3d;
   --color-navy-muted: #3d4254;
-  --color-bg: #F1E6E2;
-  --color-bg-top: #f6f2f4;
-  --app-bg:
-    radial-gradient(circle at 12% -10%, rgb(217 120 128 / 0.12), transparent 34%),
-    radial-gradient(circle at 108% 6%, rgb(111 149 128 / 0.08), transparent 30%),
-    var(--color-bg);
+  --color-bg: #f1e6e2;
+  --color-bg-top: #f1e6e2;
+  --app-bg: var(--color-bg);
   --color-surface: #ffffff;
   --color-text: #2a2e3d;
   --color-text-muted: #8b8e99;

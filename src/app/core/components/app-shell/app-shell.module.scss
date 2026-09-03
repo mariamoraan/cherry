@@ -21,7 +21,7 @@
   gap: 0.75rem 1.25rem;
   min-height: var(--header-height);
   padding: calc(0.75rem + env(safe-area-inset-top, 0px)) var(--space-page) 0.75rem;
-  background: var(--color-bg-top);
+  background: var(--color-bg);
 
   @media (min-width: 768px) {
     grid-template-columns: 1fr auto 1fr;

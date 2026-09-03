@@ -13,8 +13,7 @@
   grid-template-columns: repeat(7, 1fr);
   margin: 0 calc(-1 * var(--space-page));
   padding: 0.55rem var(--space-page);
-  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
-  backdrop-filter: blur(8px);
+  background: var(--color-bg-top);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.04em;

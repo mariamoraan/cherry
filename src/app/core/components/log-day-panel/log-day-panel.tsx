@@ -4,21 +4,45 @@ import { useRef, useState } from "react";
 
 import Link from "next/link";
 
-import { FLOW_LABELS } from "@/core/cycle/labels";
+import { FLOW_LABELS, MOOD_LABELS } from "@/core/cycle/labels";
+import {
+  CloudRainIcon,
+  CloudSunIcon,
+  FlameIcon,
+  FrownIcon,
+  HeartLucideIcon,
+  MoonIcon,
+  SmileIcon,
+  WavesHorizontalIcon,
+  ZapIcon,
+} from "@/core/icons";
 import { cx } from "@/core/lib/cx";
 import {
   FLOW_LEVELS,
+  MOODS,
   normalizeFlow,
+  normalizeMood,
   type CycleLog,
   type FlowLevel,
+  type Mood,
 } from "@/core/storage/types";
-import { WavesHorizontalIcon } from "@/core/icons";
 
 import styles from "./log-day-panel.module.scss";
 
+const MOOD_ICONS: Record<Mood, typeof SmileIcon> = {
+  HAPPY: SmileIcon,
+  CALM: CloudSunIcon,
+  SAD: FrownIcon,
+  IRRITABLE: FlameIcon,
+  ANXIOUS: CloudRainIcon,
+  TIRED: MoonIcon,
+  ENERGETIC: ZapIcon,
+  SENSITIVE: HeartLucideIcon,
+};
+
 type Draft = {
   flow: FlowLevel | null;
-  mood: string;
+  mood: Mood[];
   pain: string;
   notes: string;
 };
@@ -31,7 +55,7 @@ type LogDayPanelProps = {
   onSave: (input: {
     date: string;
     flow: FlowLevel | null;
-    mood: number | null;
+    mood: Mood[];
     pain: number | null;
     notes: string | null;
   }) => Promise<unknown>;
@@ -39,16 +63,25 @@ type LogDayPanelProps = {
 };
 
 function isEmptyDraft(draft: Draft) {
-  return !draft.flow && !draft.mood && !draft.pain && !draft.notes.trim();
+  return !draft.flow && draft.mood.length === 0 && !draft.pain && !draft.notes.trim();
 }
 
 function toInput(date: string, draft: Draft) {
   return {
     date,
     flow: draft.flow,
-    mood: draft.mood ? Number(draft.mood) : null,
+    mood: draft.mood,
     pain: draft.pain ? Number(draft.pain) : null,
     notes: draft.notes.trim() || null,
+  };
+}
+
+function draftFromLog(log: CycleLog | null): Draft {
+  return {
+    flow: normalizeFlow(log?.flow),
+    mood: normalizeMood(log?.mood),
+    pain: log?.pain?.toString() ?? "",
+    notes: log?.notes ?? "",
   };
 }
 
@@ -60,38 +93,47 @@ export function LogDayPanel({
   onSave,
   onDelete,
 }: LogDayPanelProps) {
-  const [flow, setFlow] = useState<FlowLevel | null>(
-    normalizeFlow(log?.flow),
-  );
-  const [mood, setMood] = useState(log?.mood?.toString() ?? "");
-  const [pain, setPain] = useState(log?.pain?.toString() ?? "");
-  const [notes, setNotes] = useState(log?.notes ?? "");
-  const draftRef = useRef<Draft>({ flow, mood, pain, notes });
+  const initial = draftFromLog(log);
+  const [flow, setFlow] = useState<FlowLevel | null>(initial.flow);
+  const [mood, setMood] = useState<Mood[]>(initial.mood);
+  const [pain, setPain] = useState(initial.pain);
+  const [notes, setNotes] = useState(initial.notes);
+  const draftRef = useRef<Draft>(initial);
   const notesTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasRecordRef = useRef(!!log);
+  const saveChain = useRef(Promise.resolve<unknown>(undefined));
 
   function persist(next: Draft) {
     draftRef.current = next;
     if (isEmptyDraft(next)) {
       if (hasRecordRef.current) {
         hasRecordRef.current = false;
-        void onDelete(date);
+        saveChain.current = saveChain.current
+          .catch(() => undefined)
+          .then(() => onDelete(date));
       }
       return;
     }
     hasRecordRef.current = true;
-    void onSave(toInput(date, next));
+    const payload = toInput(date, next);
+    saveChain.current = saveChain.current
+      .catch(() => undefined)
+      .then(() => onSave(payload));
   }
 
   function updateFlow(level: FlowLevel) {
-    const nextFlow = flow === level ? null : level;
+    const nextFlow = draftRef.current.flow === level ? null : level;
     setFlow(nextFlow);
     persist({ ...draftRef.current, flow: nextFlow });
   }
 
-  function updateMood(value: string) {
-    setMood(value);
-    persist({ ...draftRef.current, mood: value });
+  function updateMood(value: Mood) {
+    const current = draftRef.current.mood;
+    const nextMood = current.includes(value)
+      ? current.filter((item) => item !== value)
+      : [...current, value];
+    setMood(nextMood);
+    persist({ ...draftRef.current, mood: nextMood });
   }
 
   function updatePain(value: string) {
@@ -171,43 +213,60 @@ export function LogDayPanel({
                 )}
                 onClick={() => updateFlow(level)}
               >
-                <WavesHorizontalIcon 
-                className="logDayPanel__chip__icon" 
-                color={flow === level ? "#fff" : "#F54927"} 
-                width={getFlowIconSize(level)}
-                height={getFlowIconSize(level)}
+                <WavesHorizontalIcon
+                  className="logDayPanel__chip__icon"
+                  color={flow === level ? "#fff" : "#F54927"}
+                  width={getFlowIconSize(level)}
+                  height={getFlowIconSize(level)}
                 />
               </button>
             ))}
           </div>
         </div>
 
-        <div className={styles.logDayPanel__row}>
-          <label className={styles.logDayPanel__field}>
-            <span className={styles.logDayPanel__label}>Ánimo (1–5)</span>
-            <input
-              className={styles.logDayPanel__input}
-              type="number"
-              min={1}
-              max={5}
-              value={mood}
-              onChange={(event) => updateMood(event.target.value)}
-              placeholder="—"
-            />
-          </label>
-          <label className={styles.logDayPanel__field}>
-            <span className={styles.logDayPanel__label}>Dolor (0–10)</span>
-            <input
-              className={styles.logDayPanel__input}
-              type="number"
-              min={0}
-              max={10}
-              value={pain}
-              onChange={(event) => updatePain(event.target.value)}
-              placeholder="—"
-            />
-          </label>
+        <div className={styles.logDayPanel__field}>
+          <span className={styles.logDayPanel__label}>Ánimo</span>
+          <div className={styles.logDayPanel__chips} role="group" aria-label="Ánimo">
+            {MOODS.map((value) => {
+              const Icon = MOOD_ICONS[value];
+              const selected = mood.includes(value);
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={selected}
+                  className={cx(
+                    styles.logDayPanel__chip,
+                    styles["logDayPanel__chip--mood"],
+                    selected && styles["logDayPanel__chip--active"],
+                  )}
+                  onClick={() => updateMood(value)}
+                >
+                  <Icon
+                    color={selected ? "#fff" : "#F54927"}
+                    width={18}
+                    height={18}
+                    aria-hidden="true"
+                  />
+                  {MOOD_LABELS[value]}
+                </button>
+              );
+            })}
+          </div>
         </div>
+
+        <label className={styles.logDayPanel__field}>
+          <span className={styles.logDayPanel__label}>Dolor (0–10)</span>
+          <input
+            className={styles.logDayPanel__input}
+            type="number"
+            min={0}
+            max={10}
+            value={pain}
+            onChange={(event) => updatePain(event.target.value)}
+            placeholder="—"
+          />
+        </label>
 
         <label className={styles.logDayPanel__field}>
           <span className={styles.logDayPanel__label}>Notas</span>

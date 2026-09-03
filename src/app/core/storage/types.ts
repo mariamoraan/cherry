@@ -16,11 +16,31 @@ export function normalizeFlow(
     : null;
 }
 
+export const MOODS = [
+  "HAPPY",
+  "CALM",
+  "SAD",
+  "IRRITABLE",
+  "ANXIOUS",
+  "TIRED",
+  "ENERGETIC",
+  "SENSITIVE",
+] as const;
+
+export type Mood = (typeof MOODS)[number];
+
+export function normalizeMood(value: unknown): Mood[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is Mood =>
+    (MOODS as readonly string[]).includes(item as string),
+  );
+}
+
 export type CycleLog = {
   id: string;
   date: string;
   flow: FlowLevel | null;
-  mood: number | null;
+  mood: Mood[];
   pain: number | null;
   notes: string | null;
   createdAt: string;
@@ -30,7 +50,7 @@ export type CycleLog = {
 export type CycleLogInput = {
   date: string;
   flow?: FlowLevel | null;
-  mood?: number | null;
+  mood?: Mood[];
   pain?: number | null;
   notes?: string | null;
 };

@@ -94,11 +94,22 @@
   flex: 1;
   font-size: 0.8rem;
   font-weight: 600;
+  color: #C82909;
   cursor: pointer;
+}
+
+.logDayPanel__chip--mood {
+  flex: 1 1 calc(25% - 0.4rem);
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 4.4rem;
+  padding: 0.55rem 0.35rem;
+  font-size: 0.7rem;
 }
 
 .logDayPanel__chip--active {
   background: #C82909;
+  color: #fff;
 }
 
 .logDayPanel__input,

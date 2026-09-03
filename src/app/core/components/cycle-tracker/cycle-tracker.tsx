@@ -50,18 +50,19 @@ export function CycleTracker() {
             periodDay={tracker.periodDay}
             cycleDay={tracker.cycleDay}
           />
-          {tracker.isLoading && (
+          {tracker.isLoading ? (
             <p className={styles.cycleTracker__status}>Cargando registros…</p>
+          ) : (
+            <LogDayPanel
+              key={tracker.selectedDate}
+              date={tracker.selectedDate}
+              log={tracker.selectedLog}
+              isAuthenticated={tracker.isAuthenticated}
+              isSaving={tracker.isSaving}
+              onSave={tracker.upsertLog}
+              onDelete={tracker.deleteLog}
+            />
           )}
-          <LogDayPanel
-            key={tracker.selectedDate}
-            date={tracker.selectedDate}
-            log={tracker.selectedLog}
-            isAuthenticated={tracker.isAuthenticated}
-            isSaving={tracker.isSaving}
-            onSave={tracker.upsertLog}
-            onDelete={tracker.deleteLog}
-          />
         </div>
       }
       calendar={

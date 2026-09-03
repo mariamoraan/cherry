@@ -47,16 +47,28 @@ export function useCycleLogs(from?: string, to?: string) {
       isAuthenticated
         ? upsertRemoteCycleLog(input)
         : upsertLocalCycleLog(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CYCLE_LOGS_QUERY_KEY });
+    onSuccess: (saved) => {
+      queryClient.setQueriesData<CycleLog[]>(
+        { queryKey: CYCLE_LOGS_QUERY_KEY },
+        (current) => {
+          if (!current) return [saved];
+          const without = current.filter((log) => log.date !== saved.date);
+          return [...without, saved].sort((a, b) => b.date.localeCompare(a.date));
+        },
+      );
+      void queryClient.invalidateQueries({ queryKey: CYCLE_LOGS_QUERY_KEY });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (date: string) =>
       isAuthenticated ? deleteRemoteCycleLog(date) : deleteLocalCycleLog(date),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CYCLE_LOGS_QUERY_KEY });
+    onSuccess: (_void, date) => {
+      queryClient.setQueriesData<CycleLog[]>(
+        { queryKey: CYCLE_LOGS_QUERY_KEY },
+        (current) => current?.filter((log) => log.date !== date) ?? [],
+      );
+      void queryClient.invalidateQueries({ queryKey: CYCLE_LOGS_QUERY_KEY });
     },
   });
 

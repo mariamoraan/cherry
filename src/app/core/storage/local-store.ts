@@ -2,6 +2,7 @@ import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 
 import {
   normalizeFlow,
+  normalizeMood,
   parseDateKey,
   toDateKey,
   type CycleLog,
@@ -44,7 +45,7 @@ function createLog(input: CycleLogInput, existing?: CycleLog): CycleLog {
     id: existing?.id ?? crypto.randomUUID(),
     date: toDateKey(input.date),
     flow: normalizeFlow(pick(input.flow, existing?.flow ?? null)),
-    mood: pick(input.mood, existing?.mood ?? null),
+    mood: normalizeMood(pick(input.mood, existing?.mood ?? [])),
     pain: pick(input.pain, existing?.pain ?? null),
     notes: pick(input.notes, existing?.notes ?? null),
     createdAt: existing?.createdAt ?? now,
@@ -65,7 +66,11 @@ export async function getLocalCycleLogs(
       if (to && log.date > to) return false;
       return true;
     })
-    .map((log) => ({ ...log, flow: normalizeFlow(log.flow) }))
+    .map((log) => ({
+      ...log,
+      flow: normalizeFlow(log.flow),
+      mood: normalizeMood(log.mood),
+    }))
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 

@@ -16,6 +16,17 @@ enum FlowLevel {
   HEAVY
 }
 
+enum Mood {
+  HAPPY
+  CALM
+  SAD
+  IRRITABLE
+  ANXIOUS
+  TIRED
+  ENERGETIC
+  SENSITIVE
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -36,7 +47,7 @@ model CycleLog {
   userId    String
   date      DateTime   @db.Date
   flow      FlowLevel?
-  mood      Int?
+  mood      Mood[]     @default([])
   pain      Int?
   notes     String?
   createdAt DateTime   @default(now())

@@ -18,3 +18,17 @@ export const FlowLevel = {
 } as const
 
 export type FlowLevel = (typeof FlowLevel)[keyof typeof FlowLevel]
+
+
+export const Mood = {
+  HAPPY: 'HAPPY',
+  CALM: 'CALM',
+  SAD: 'SAD',
+  IRRITABLE: 'IRRITABLE',
+  ANXIOUS: 'ANXIOUS',
+  TIRED: 'TIRED',
+  ENERGETIC: 'ENERGETIC',
+  SENSITIVE: 'SENSITIVE'
+} as const
+
+export type Mood = (typeof Mood)[keyof typeof Mood]

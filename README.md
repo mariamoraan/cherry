@@ -260,6 +260,34 @@ The **proxy** acts as the first line of defense on every request. Protected page
 
 ---
 
+## Progressive Web App (PWA)
+
+Cherry is installable as a PWA on HTTPS (production: `https://cherry-five-beta.vercel.app`).
+
+| Piece | Location |
+|---|---|
+| Web App Manifest | [`src/app/manifest.ts`](src/app/manifest.ts) |
+| Service worker (Serwist) | [`src/app/sw.ts`](src/app/sw.ts) + [`src/app/serwist/[path]/route.ts`](src/app/serwist/[path]/route.ts) |
+| Offline fallback | [`src/app/~offline/page.tsx`](src/app/~offline/page.tsx) |
+| Icons | [`public/icons/`](public/icons/) |
+| Digital Asset Links (Play / TWA) | [`public/.well-known/assetlinks.json`](public/.well-known/assetlinks.json) |
+
+### Verify installability
+
+1. Deploy to Vercel (service worker caching is production-oriented).
+2. Open Chrome → DevTools → Application → Manifest / Service Workers.
+3. Confirm “Install app” appears, and that offline navigation shows `/~offline`.
+
+### Google Play (TWA) — next steps
+
+1. Replace `REPLACE_WITH_PLAY_APP_SIGNING_SHA256` in `assetlinks.json` with the **App signing key** SHA-256 from Play Console → App integrity (and keep the upload/debug fingerprints if needed).
+2. Package with [Bubblewrap](https://github.com/GoogleChromeLabs/bubblewrap) or [PWABuilder](https://www.pwabuilder.com/) pointing at `https://cherry-five-beta.vercel.app/`.
+3. Upload the `.aab` to Internal testing, confirm the URL bar is hidden (Asset Links OK), then promote.
+
+OAuth callback URLs must include the production origin, e.g. `https://cherry-five-beta.vercel.app/api/auth/callback/github`.
+
+---
+
 ## Keeping dependencies up to date
 
 ### Check what's outdated

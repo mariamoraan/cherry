@@ -28,6 +28,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@serwist/turbopack": "^9.5.12",
     "@tailwindcss/postcss": "^4",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/bcryptjs": "^2.4.6",
@@ -37,6 +38,7 @@
     "@typescript-eslint/eslint-plugin": "^8.62.0",
     "@typescript-eslint/parser": "^8.62.0",
     "dotenv": "^17.4.2",
+    "esbuild": "^0.28.2",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.9",
     "eslint-config-prettier": "^10.1.8",
@@ -46,6 +48,7 @@
     "prettier": "^3.8.4",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "sass": "^1.101.0",
+    "serwist": "^9.5.12",
     "tailwindcss": "^4",
     "tsx": "^4.22.4",
     "typescript": "^5"

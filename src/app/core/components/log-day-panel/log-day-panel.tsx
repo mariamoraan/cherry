@@ -325,17 +325,6 @@ export function LogDayPanel({
             placeholder="Opcional"
           />
         </label>
-
-        {log && (
-          <button
-            type="button"
-            className={styles.logDayPanel__delete}
-            onClick={() => void onDelete(date)}
-            disabled={isSaving}
-          >
-            Eliminar registro
-          </button>
-        )}
       </div>
     </section>
   );

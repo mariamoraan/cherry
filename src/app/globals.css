@@ -32,6 +32,11 @@
   --header-height: 4.5rem;
   --bp-tablet: 768px;
   --bp-desktop: 1200px;
+  --motion-fast: 150ms;
+  --motion-base: 250ms;
+  --motion-enter: 320ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-distance: 0.5rem;
   --background: var(--color-bg);
   --foreground: var(--color-text);
 }
@@ -83,4 +88,14 @@ a {
 :focus-visible {
   outline: 2px solid var(--color-pink);
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

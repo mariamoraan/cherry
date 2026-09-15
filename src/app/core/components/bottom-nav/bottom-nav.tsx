@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 import type { TrackerPane } from "@/core/components/app-shell/app-shell";
 import { cx } from "@/core/lib/cx";
@@ -11,9 +12,20 @@ type BottomNavProps = {
   pane: TrackerPane;
 };
 
+const PANE_INDEX: Record<TrackerPane, number> = {
+  today: 0,
+  calendar: 1,
+  insights: 2,
+};
+
 export function BottomNav({ pane }: BottomNavProps) {
   return (
-    <nav className={styles.bottomNav} aria-label="Principal">
+    <nav
+      className={styles.bottomNav}
+      aria-label="Principal"
+      style={{ "--nav-i": PANE_INDEX[pane] } as CSSProperties}
+    >
+      <span className={styles.bottomNav__pill} aria-hidden="true" />
       <Link
         href="/dashboard"
         className={cx(

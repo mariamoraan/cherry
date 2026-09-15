@@ -15,13 +15,26 @@
   gap: 0.75rem;
 }
 
+.calendarMonth__titleViewport {
+  flex: 1;
+  overflow: hidden;
+  min-width: 0;
+}
+
 .calendarMonth__title {
   margin: 0;
-  flex: 1;
   text-align: center;
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-navy);
+}
+
+.calendarMonth__title--forward {
+  animation: calendarMonthSlideForward var(--motion-enter) var(--ease-out);
+}
+
+.calendarMonth__title--back {
+  animation: calendarMonthSlideBack var(--motion-enter) var(--ease-out);
 }
 
 .calendarMonth--sm .calendarMonth__title {
@@ -39,6 +52,7 @@
   background: var(--color-track);
   color: var(--color-navy);
   cursor: pointer;
+  transition: background-color var(--motion-fast) var(--ease-out);
 
   &:hover {
     background: var(--color-pink-soft);
@@ -69,9 +83,21 @@
   font-size: 0.65rem;
 }
 
+.calendarMonth__body {
+  overflow: hidden;
+}
+
 .calendarMonth__grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+}
+
+.calendarMonth__grid--forward {
+  animation: calendarMonthSlideForward var(--motion-enter) var(--ease-out);
+}
+
+.calendarMonth__grid--back {
+  animation: calendarMonthSlideBack var(--motion-enter) var(--ease-out);
 }
 
 .calendarMonth__day {
@@ -87,6 +113,9 @@
   font-weight: 600;
   color: var(--color-navy);
   cursor: pointer;
+  transition:
+    background-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
 }
 
 .calendarMonth--sm .calendarMonth__day {
@@ -124,6 +153,7 @@
   height: 1.9rem;
   align-items: center;
   justify-content: center;
+  transition: box-shadow var(--motion-fast) var(--ease-out);
 }
 
 .calendarMonth--sm .calendarMonth__num {
@@ -140,4 +170,28 @@
 .calendarMonth__day--period.calendarMonth__day--today .calendarMonth__num,
 .calendarMonth__day--period.calendarMonth__day--selected .calendarMonth__num {
   box-shadow: inset 0 0 0 1.5px var(--color-ring);
+}
+
+@keyframes calendarMonthSlideForward {
+  from {
+    opacity: 0;
+    transform: translateX(1rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes calendarMonthSlideBack {
+  from {
+    opacity: 0;
+    transform: translateX(-1rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

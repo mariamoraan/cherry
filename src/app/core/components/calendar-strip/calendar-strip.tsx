@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 import type { CalendarDay } from "@/core/cycle/calendar";
 import { formatLongDate, WEEKDAY_LABELS } from "@/core/cycle/dates";
@@ -21,6 +21,8 @@ type CalendarStripProps = {
   onNextWeek: () => void;
 };
 
+const IGNORE_FALLBACK_MS = 120;
+
 export function CalendarStrip({
   weeks,
   onSelectDate,
@@ -29,52 +31,115 @@ export function CalendarStrip({
 }: CalendarStripProps) {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const ignoreScrollRef = useRef(false);
+  const ignoreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onPrevWeekRef = useRef(onPrevWeek);
+  const onNextWeekRef = useRef(onNextWeek);
+  onPrevWeekRef.current = onPrevWeek;
+  onNextWeekRef.current = onNextWeek;
+  const middleKey = weeks[1]?.key;
 
-  useEffect(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
+  function beginIgnore() {
     ignoreScrollRef.current = true;
-    const middle = scroller.clientWidth;
-    scroller.scrollLeft = middle;
-    const frame = requestAnimationFrame(() => {
+    if (ignoreTimeoutRef.current) clearTimeout(ignoreTimeoutRef.current);
+    ignoreTimeoutRef.current = setTimeout(() => {
       ignoreScrollRef.current = false;
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [weeks[1]?.key]);
+      ignoreTimeoutRef.current = null;
+    }, IGNORE_FALLBACK_MS);
+  }
 
-  const handleScroll = () => {
-    const scroller = scrollerRef.current;
-    if (!scroller || ignoreScrollRef.current) return;
-
-    const width = scroller.clientWidth;
-    if (width <= 0) return;
-
-    const index = Math.round(scroller.scrollLeft / width);
-    if (index === 0) {
-      ignoreScrollRef.current = true;
-      onPrevWeek();
-    } else if (index === 2) {
-      ignoreScrollRef.current = true;
-      onNextWeek();
+  function endIgnore() {
+    ignoreScrollRef.current = false;
+    if (ignoreTimeoutRef.current) {
+      clearTimeout(ignoreTimeoutRef.current);
+      ignoreTimeoutRef.current = null;
     }
-  };
+  }
+
+  useLayoutEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller || !middleKey) return;
+
+    beginIgnore();
+    scroller.scrollLeft = scroller.clientWidth;
+
+    const handleScrollEnd = () => {
+      if (ignoreScrollRef.current) {
+        endIgnore();
+        return;
+      }
+
+      const width = scroller.clientWidth;
+      if (width <= 0) return;
+
+      const index = Math.round(scroller.scrollLeft / width);
+      if (index === 0) {
+        beginIgnore();
+        onPrevWeekRef.current();
+      } else if (index === 2) {
+        beginIgnore();
+        onNextWeekRef.current();
+      }
+    };
+
+    const handleScrollFallback = () => {
+      if (ignoreScrollRef.current) return;
+      // Browsers without scrollend: act when resting near a snap edge.
+      const width = scroller.clientWidth;
+      if (width <= 0) return;
+      const progress = scroller.scrollLeft / width;
+      if (progress < 0.05) {
+        beginIgnore();
+        onPrevWeekRef.current();
+      } else if (progress > 1.95) {
+        beginIgnore();
+        onNextWeekRef.current();
+      }
+    };
+
+    const supportsScrollEnd =
+      typeof window !== "undefined" && "onscrollend" in window;
+
+    if (supportsScrollEnd) {
+      scroller.addEventListener("scrollend", handleScrollEnd);
+    } else {
+      scroller.addEventListener("scroll", handleScrollFallback, { passive: true });
+    }
+
+    return () => {
+      if (supportsScrollEnd) {
+        scroller.removeEventListener("scrollend", handleScrollEnd);
+      } else {
+        scroller.removeEventListener("scroll", handleScrollFallback);
+      }
+      if (ignoreTimeoutRef.current) {
+        clearTimeout(ignoreTimeoutRef.current);
+        ignoreTimeoutRef.current = null;
+      }
+    };
+  }, [middleKey]);
+
+  function handlePrev() {
+    beginIgnore();
+    onPrevWeek();
+  }
+
+  function handleNext() {
+    beginIgnore();
+    onNextWeek();
+  }
 
   return (
     <div className={styles.calendarStrip}>
       <button
         type="button"
         className={styles.calendarStrip__nav}
-        onClick={onPrevWeek}
+        onClick={handlePrev}
         aria-label="Semana anterior"
       >
         <ChevronLeftIcon />
       </button>
 
-      <div
-        ref={scrollerRef}
-        className={styles.calendarStrip__scroller}
-        onScroll={handleScroll}
-      >
+      <div ref={scrollerRef} className={styles.calendarStrip__scroller}>
         {weeks.map((week) => (
           <div key={week.key} className={styles.calendarStrip__week}>
             {week.days.map((day) => (
@@ -108,7 +173,7 @@ export function CalendarStrip({
       <button
         type="button"
         className={styles.calendarStrip__nav}
-        onClick={onNextWeek}
+        onClick={handleNext}
         aria-label="Semana siguiente"
       >
         <ChevronRightIcon />

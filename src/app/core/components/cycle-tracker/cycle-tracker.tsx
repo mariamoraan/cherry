@@ -26,6 +26,7 @@ import {
   startOfWeek,
 } from "@/core/cycle/dates";
 import { getFirstName } from "@/core/cycle/labels";
+import { cx } from "@/core/lib/cx";
 
 import styles from "./cycle-tracker.module.scss";
 
@@ -54,6 +55,16 @@ export function CycleTracker() {
   const pane = paneFromPath(usePathname());
   const tracker = useTracker();
   const calendarScrollRef = useRef<CalendarScrollHandle | null>(null);
+  const previousDateRef = useRef(tracker.selectedDate);
+  const dayDirectionRef = useRef<"forward" | "back">("forward");
+
+  if (tracker.selectedDate !== previousDateRef.current) {
+    dayDirectionRef.current =
+      tracker.selectedDate >= previousDateRef.current ? "forward" : "back";
+    previousDateRef.current = tracker.selectedDate;
+  }
+
+  const dayDirection = dayDirectionRef.current;
 
   const weeks = useMemo(
     () =>
@@ -108,29 +119,42 @@ export function CycleTracker() {
             onPrevWeek={() => tracker.shiftWeek(-1)}
             onNextWeek={() => tracker.shiftWeek(1)}
           />
-          <TodayHero
-            firstName={getFirstName(tracker.user?.name)}
-            periodDay={tracker.periodDay}
-            cycleDay={tracker.cycleDay}
-            selectedDate={tracker.selectedDate}
-            today={tracker.today}
-          />
-          {tracker.showNextPeriodNotice && tracker.prediction && (
-            <NextPeriodNotice prediction={tracker.prediction} />
-          )}
-          {tracker.isLoading ? (
-            <p className={styles.cycleTracker__status}>Cargando registros…</p>
-          ) : (
-            <LogDayPanel
-              key={tracker.selectedDate}
-              date={tracker.selectedDate}
-              log={tracker.selectedLog}
-              isAuthenticated={tracker.isAuthenticated}
-              isSaving={tracker.isSaving}
-              onSave={tracker.upsertLog}
-              onDelete={tracker.deleteLog}
-            />
-          )}
+          <div
+            key={tracker.selectedDate}
+            className={cx(
+              styles.cycleTracker__dayContent,
+              dayDirection === "forward"
+                ? styles["cycleTracker__dayContent--forward"]
+                : styles["cycleTracker__dayContent--back"],
+            )}
+          >
+            <div className={styles.cycleTracker__dayHero}>
+              <TodayHero
+                firstName={getFirstName(tracker.user?.name)}
+                periodDay={tracker.periodDay}
+                cycleDay={tracker.cycleDay}
+                selectedDate={tracker.selectedDate}
+                today={tracker.today}
+              />
+              {tracker.showNextPeriodNotice && tracker.prediction && (
+                <NextPeriodNotice prediction={tracker.prediction} />
+              )}
+            </div>
+            <div className={styles.cycleTracker__dayLog}>
+              {tracker.isLoading ? (
+                <p className={styles.cycleTracker__status}>Cargando registros…</p>
+              ) : (
+                <LogDayPanel
+                  date={tracker.selectedDate}
+                  log={tracker.selectedLog}
+                  isAuthenticated={tracker.isAuthenticated}
+                  isSaving={tracker.isSaving}
+                  onSave={tracker.upsertLog}
+                  onDelete={tracker.deleteLog}
+                />
+              )}
+            </div>
+          </div>
         </div>
       }
       calendar={

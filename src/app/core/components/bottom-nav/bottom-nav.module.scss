@@ -1,17 +1,20 @@
 .bottomNav {
+  --nav-i: 0;
+  --nav-pad: 0.45rem;
+  --nav-gap: 0.2rem;
   position: fixed;
   left: 50%;
   bottom: 1rem;
   z-index: 20;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   width: min(24rem, calc(100% - 2rem));
   transform: translateX(-50%);
   align-items: center;
-  justify-content: space-around;
-  gap: 0.2rem;
+  gap: var(--nav-gap);
   border-radius: var(--radius-pill);
   background: var(--color-navy);
-  padding: 0.45rem;
+  padding: var(--nav-pad);
   box-shadow: 0 12px 30px rgb(42 46 61 / 0.28);
 
   @media (min-width: 768px) {
@@ -19,10 +22,29 @@
   }
 }
 
+.bottomNav__pill {
+  position: absolute;
+  top: var(--nav-pad);
+  bottom: var(--nav-pad);
+  left: var(--nav-pad);
+  z-index: 0;
+  width: calc(
+    (100% - (2 * var(--nav-pad)) - (2 * var(--nav-gap))) / 3
+  );
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 0.12);
+  transform: translateX(
+    calc(var(--nav-i) * (100% + var(--nav-gap)))
+  );
+  transition: transform var(--motion-base) var(--ease-out);
+  pointer-events: none;
+}
+
 .bottomNav__item {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   min-height: 2.75rem;
-  flex: 1;
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
@@ -31,10 +53,10 @@
   text-decoration: none;
   font-size: 0.82rem;
   font-weight: 600;
+  transition: color var(--motion-fast) var(--ease-out);
 }
 
 .bottomNav__item--active {
-  background: rgb(255 255 255 / 0.12);
   color: #fff;
 }
 
@@ -42,4 +64,9 @@
   width: 1.1rem;
   height: 1.1rem;
   flex-shrink: 0;
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+
+.bottomNav__item--active .bottomNav__icon {
+  transform: scale(1.05);
 }

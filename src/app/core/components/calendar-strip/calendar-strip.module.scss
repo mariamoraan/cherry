@@ -17,6 +17,9 @@
   background: transparent;
   color: var(--color-text-muted);
   cursor: pointer;
+  transition:
+    color var(--motion-fast) var(--ease-out),
+    background-color var(--motion-fast) var(--ease-out);
 
   &:hover {
     color: var(--color-navy);
@@ -79,6 +82,9 @@
   font-weight: 700;
   color: var(--color-text);
   cursor: pointer;
+  transition:
+    background-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
 }
 
 .calendarStrip__day--period {
@@ -109,6 +115,7 @@
   height: 1.85rem;
   align-items: center;
   justify-content: center;
+  transition: box-shadow var(--motion-fast) var(--ease-out);
 }
 
 .calendarStrip__day--today .calendarStrip__num,

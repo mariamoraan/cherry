@@ -21,8 +21,8 @@
   pointer-events: none;
   transform: translateY(0.5rem) scale(0.96);
   transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
+    opacity var(--motion-base) var(--ease-out),
+    transform var(--motion-base) var(--ease-out);
 
   @media (min-width: 768px) {
     bottom: 1.5rem;

@@ -4,8 +4,10 @@ import {
   cloneElement,
   isValidElement,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
+  type CSSProperties,
   type ReactElement,
   type ReactNode,
 } from "react";
@@ -43,6 +45,8 @@ const NAV_ITEMS: Array<{ pane: TrackerPane; href: string; label: string }> = [
   { pane: "insights", href: "/insights", label: "Insights" },
 ];
 
+type OverlayPhase = "closed" | "opening" | "open" | "closing";
+
 export function AppShell({
   pane,
   formattedDate,
@@ -55,21 +59,53 @@ export function AppShell({
   showJumpToToday,
   onJumpToToday,
 }: AppShellProps) {
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [datePopoverPhase, setDatePopoverPhase] =
+    useState<OverlayPhase>("closed");
   const datePopoverAnchorRef = useRef<HTMLDivElement | null>(null);
+  const headerNavRef = useRef<HTMLElement | null>(null);
+  const [navPill, setNavPill] = useState({ left: 0, width: 0 });
+  const [navPillReady, setNavPillReady] = useState(false);
+
+  const isDatePopoverMounted = datePopoverPhase !== "closed";
+  const isDatePopoverOpen = datePopoverPhase === "open";
+  const isDatePopoverExpanded =
+    datePopoverPhase === "opening" || datePopoverPhase === "open";
+
+  function openDatePopover() {
+    setDatePopoverPhase((phase) =>
+      phase === "closed" || phase === "closing" ? "opening" : phase,
+    );
+  }
+
+  function closeDatePopover() {
+    setDatePopoverPhase((phase) =>
+      phase === "open" || phase === "opening" ? "closing" : phase,
+    );
+  }
+
+  function toggleDatePopover() {
+    if (isDatePopoverExpanded) closeDatePopover();
+    else openDatePopover();
+  }
 
   useEffect(() => {
-    if (!isCalendarOpen) return;
+    if (datePopoverPhase !== "opening") return;
+    const id = requestAnimationFrame(() => setDatePopoverPhase("open"));
+    return () => cancelAnimationFrame(id);
+  }, [datePopoverPhase]);
+
+  useEffect(() => {
+    if (!isDatePopoverExpanded) return;
 
     const handleDocumentPointerDown = (event: MouseEvent) => {
       const target = event.target as Node | null;
       if (!target) return;
       if (datePopoverAnchorRef.current?.contains(target)) return;
-      setIsCalendarOpen(false);
+      closeDatePopover();
     };
 
     const handleDocumentKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setIsCalendarOpen(false);
+      if (event.key === "Escape") closeDatePopover();
     };
 
     document.addEventListener("mousedown", handleDocumentPointerDown);
@@ -78,7 +114,38 @@ export function AppShell({
       document.removeEventListener("mousedown", handleDocumentPointerDown);
       document.removeEventListener("keydown", handleDocumentKeyDown);
     };
-  }, [isCalendarOpen]);
+  }, [isDatePopoverExpanded]);
+
+  useLayoutEffect(() => {
+    const navEl = headerNavRef.current;
+    if (!navEl) return;
+
+    const media = window.matchMedia("(min-width: 768px)");
+
+    const updatePill = () => {
+      if (!media.matches) {
+        setNavPillReady(false);
+        return;
+      }
+      const active = navEl.querySelector<HTMLElement>('[aria-current="page"]');
+      if (!active || active.offsetWidth <= 0) return;
+      setNavPill({ left: active.offsetLeft, width: active.offsetWidth });
+      setNavPillReady(true);
+    };
+
+    updatePill();
+    media.addEventListener("change", updatePill);
+    window.addEventListener("resize", updatePill);
+
+    const observer = new ResizeObserver(updatePill);
+    observer.observe(navEl);
+
+    return () => {
+      media.removeEventListener("change", updatePill);
+      window.removeEventListener("resize", updatePill);
+      observer.disconnect();
+    };
+  }, [pane]);
 
   const pickerElement = isValidElement(datePicker)
     ? (datePicker as ReactElement<{
@@ -91,14 +158,14 @@ export function AppShell({
     ? cloneElement(pickerElement, {
         onSelectDate: (date: string) => {
           pickerElement.props.onSelectDate?.(date);
-          setIsCalendarOpen(false);
+          closeDatePopover();
         },
         variant: "sm",
       })
     : datePicker;
 
   return (
-    <div className={cx(styles.appShell, styles[`appShell--${pane}`])}>
+    <div className={styles.appShell}>
       <header className={styles.appShell__header}>
         <div
           className={styles.appShell__datePopoverAnchor}
@@ -108,19 +175,28 @@ export function AppShell({
             type="button"
             className={styles.appShell__date}
             aria-haspopup="dialog"
-            aria-expanded={isCalendarOpen}
+            aria-expanded={isDatePopoverExpanded}
             aria-controls="calendar-date-popover"
-            onClick={() => setIsCalendarOpen((v) => !v)}
+            onClick={toggleDatePopover}
           >
             {formattedDate}
           </button>
 
-          {isCalendarOpen && (
+          {isDatePopoverMounted && (
             <div
-              className={styles.appShell__datePopover}
+              className={cx(
+                styles.appShell__datePopover,
+                isDatePopoverOpen && styles["appShell__datePopover--open"],
+              )}
               id="calendar-date-popover"
               role="dialog"
               aria-label="Calendario"
+              onTransitionEnd={(event) => {
+                if (event.target !== event.currentTarget) return;
+                if (datePopoverPhase === "closing") {
+                  setDatePopoverPhase("closed");
+                }
+              }}
             >
               <section className={styles.appShell__calendarPopoverCard}>
                 {pickerForPopover}
@@ -128,7 +204,21 @@ export function AppShell({
             </div>
           )}
         </div>
-        <nav className={styles.appShell__nav} aria-label="Principal">
+        <nav
+          ref={headerNavRef}
+          className={cx(
+            styles.appShell__nav,
+            navPillReady && styles["appShell__nav--ready"],
+          )}
+          aria-label="Principal"
+          style={
+            {
+              "--nav-pill-left": `${navPill.left}px`,
+              "--nav-pill-width": `${navPill.width}px`,
+            } as CSSProperties
+          }
+        >
+          <span className={styles.appShell__navPill} aria-hidden="true" />
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.pane}
@@ -148,13 +238,38 @@ export function AppShell({
       </header>
 
       <div className={cx(styles.appShell__main, styles[`appShell__main--${pane}`])}>
-        <section className={styles.appShell__today} aria-label="Hoy">
+        <section
+          className={cx(
+            styles.appShell__pane,
+            pane === "today" && styles["appShell__pane--active"],
+          )}
+          aria-label="Hoy"
+          aria-hidden={pane !== "today"}
+          inert={pane !== "today" ? true : undefined}
+        >
           {today}
         </section>
-        <section className={styles.appShell__calendar} aria-label="Calendario">
+        <section
+          className={cx(
+            styles.appShell__pane,
+            styles.appShell__calendar,
+            pane === "calendar" && styles["appShell__pane--active"],
+          )}
+          aria-label="Calendario"
+          aria-hidden={pane !== "calendar"}
+          inert={pane !== "calendar" ? true : undefined}
+        >
           {calendar}
         </section>
-        <section className={styles.appShell__insights} aria-label="Insights">
+        <section
+          className={cx(
+            styles.appShell__pane,
+            pane === "insights" && styles["appShell__pane--active"],
+          )}
+          aria-label="Insights"
+          aria-hidden={pane !== "insights"}
+          inert={pane !== "insights" ? true : undefined}
+        >
           {insights}
         </section>
       </div>

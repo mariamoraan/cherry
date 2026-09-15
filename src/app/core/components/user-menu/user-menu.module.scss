@@ -46,6 +46,19 @@
   border-radius: 1.1rem;
   background: var(--color-surface);
   box-shadow: var(--shadow-card);
+  opacity: 0;
+  transform: translateY(-0.5rem) scale(0.97);
+  transform-origin: top right;
+  transition:
+    opacity var(--motion-base) var(--ease-out),
+    transform var(--motion-base) var(--ease-out);
+  pointer-events: none;
+}
+
+.userMenu__dropdown--open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
 }
 
 .userMenu__meta {

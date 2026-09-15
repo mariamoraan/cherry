@@ -102,7 +102,14 @@ export function CalendarScroll({
     if (!active) return;
     const node = monthRefs.current.get(todayMonth);
     if (!node) return;
-    node.scrollIntoView({ block: "start" });
+
+    const rect = node.getBoundingClientRect();
+    const nearViewport =
+      rect.top < window.innerHeight * 0.7 && rect.bottom > window.innerHeight * 0.2;
+    if (!nearViewport) {
+      node.scrollIntoView({ block: "start" });
+    }
+
     extendingRef.current = null;
     setReady(false);
     const timer = window.setTimeout(() => {
@@ -116,13 +123,28 @@ export function CalendarScroll({
       prevBackRef.current = back;
       return;
     }
+
     const added = back - prevBackRef.current;
     prevBackRef.current = back;
-    const anchor = monthKeys[added];
-    if (!anchor) return;
-    const node = monthRefs.current.get(anchor);
-    if (node) {
-      node.scrollIntoView({ block: "start" });
+
+    let delta = 0;
+    for (let index = 0; index < added; index += 1) {
+      const node = monthRefs.current.get(monthKeys[index] ?? "");
+      if (node) delta += node.offsetHeight;
+    }
+
+    const anchor = monthRefs.current.get(monthKeys[added] ?? "");
+    const parent = anchor?.parentElement;
+    if (parent && added > 0) {
+      const gap =
+        Number.parseFloat(window.getComputedStyle(parent).rowGap || "0") ||
+        Number.parseFloat(window.getComputedStyle(parent).gap || "0") ||
+        0;
+      delta += gap * added;
+    }
+
+    if (delta > 0) {
+      window.scrollBy(0, delta);
     }
   }, [back, monthKeys]);
 

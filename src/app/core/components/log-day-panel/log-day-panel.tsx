@@ -123,6 +123,7 @@ export function LogDayPanel({
   const [mood, setMood] = useState<Mood[]>(initial.mood);
   const [symptoms, setSymptoms] = useState<Symptom[]>(initial.symptoms);
   const [notes, setNotes] = useState(initial.notes);
+  const [pulseChip, setPulseChip] = useState<string | null>(null);
   const draftRef = useRef<Draft>(initial);
   const notesTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasRecordRef = useRef(!!log);
@@ -149,6 +150,7 @@ export function LogDayPanel({
   function updateFlow(level: FlowLevel) {
     const nextFlow = draftRef.current.flow === level ? null : level;
     setFlow(nextFlow);
+    if (nextFlow) setPulseChip(`flow-${level}`);
     persist({ ...draftRef.current, flow: nextFlow });
   }
 
@@ -158,6 +160,9 @@ export function LogDayPanel({
       ? current.filter((item) => item !== value)
       : [...current, value];
     setMood(nextMood);
+    if (nextMood.includes(value) && !current.includes(value)) {
+      setPulseChip(`mood-${value}`);
+    }
     persist({ ...draftRef.current, mood: nextMood });
   }
 
@@ -167,6 +172,9 @@ export function LogDayPanel({
       ? current.filter((item) => item !== value)
       : [...current, value];
     setSymptoms(nextSymptoms);
+    if (nextSymptoms.includes(value) && !current.includes(value)) {
+      setPulseChip(`symptom-${value}`);
+    }
     persist({ ...draftRef.current, symptoms: nextSymptoms });
   }
 
@@ -269,8 +277,13 @@ export function LogDayPanel({
                   styles.logDayPanel__chip,
                   flowChipClass[level],
                   flow === level && styles["logDayPanel__chip--active"],
+                  pulseChip === `flow-${level}` &&
+                    styles["logDayPanel__chip--pulse"],
                 )}
                 onClick={() => updateFlow(level)}
+                onAnimationEnd={() => {
+                  if (pulseChip === `flow-${level}`) setPulseChip(null);
+                }}
               >
                 <WavesHorizontalIcon
                   className="logDayPanel__chip__icon"
@@ -299,8 +312,13 @@ export function LogDayPanel({
                     styles["logDayPanel__chip--labeled"],
                     moodChipClass[value],
                     selected && styles["logDayPanel__chip--active"],
+                    pulseChip === `mood-${value}` &&
+                      styles["logDayPanel__chip--pulse"],
                   )}
                   onClick={() => updateMood(value)}
+                  onAnimationEnd={() => {
+                    if (pulseChip === `mood-${value}`) setPulseChip(null);
+                  }}
                 >
                   <Icon color="currentColor" width={18} height={18} aria-hidden="true" />
                   {MOOD_LABELS[value]}
@@ -326,8 +344,13 @@ export function LogDayPanel({
                     styles["logDayPanel__chip--labeled"],
                     symptomChipClass[value],
                     selected && styles["logDayPanel__chip--active"],
+                    pulseChip === `symptom-${value}` &&
+                      styles["logDayPanel__chip--pulse"],
                   )}
                   onClick={() => updateSymptom(value)}
+                  onAnimationEnd={() => {
+                    if (pulseChip === `symptom-${value}`) setPulseChip(null);
+                  }}
                 >
                   <Icon color="currentColor" width={18} height={18} aria-hidden="true" />
                   {SYMPTOM_LABELS[value]}

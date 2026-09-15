@@ -4,8 +4,62 @@
   gap: 0.25rem;
 }
 
+.cycleTracker__dayContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cycleTracker__dayContent--forward {
+  .cycleTracker__dayHero {
+    animation: dayEnterForward var(--motion-enter) var(--ease-out);
+  }
+
+  .cycleTracker__dayLog {
+    animation: dayEnterForward var(--motion-enter) var(--ease-out);
+    animation-delay: 60ms;
+    animation-fill-mode: both;
+  }
+}
+
+.cycleTracker__dayContent--back {
+  .cycleTracker__dayHero {
+    animation: dayEnterBack var(--motion-enter) var(--ease-out);
+  }
+
+  .cycleTracker__dayLog {
+    animation: dayEnterBack var(--motion-enter) var(--ease-out);
+    animation-delay: 60ms;
+    animation-fill-mode: both;
+  }
+}
+
 .cycleTracker__status {
   margin: 0 0 1rem;
   font-size: 0.9rem;
   color: var(--color-text-muted);
+}
+
+@keyframes dayEnterForward {
+  from {
+    opacity: 0;
+    transform: translateX(1rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes dayEnterBack {
+  from {
+    opacity: 0;
+    transform: translateX(-1rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

@@ -44,6 +44,7 @@
   background: transparent;
   padding: 0;
   cursor: pointer;
+  transition: color var(--motion-fast) var(--ease-out);
 
   &:hover {
     color: var(--color-pink-text);
@@ -63,9 +64,25 @@
   width: min(36rem, calc(100vw - 2 * var(--space-page)));
   max-height: 80dvh;
   overflow: auto;
+  opacity: 0;
+  transform: translateY(-0.5rem) scale(0.97);
+  transform-origin: top left;
+  transition:
+    opacity var(--motion-base) var(--ease-out),
+    transform var(--motion-base) var(--ease-out);
+  pointer-events: none;
+}
+
+.appShell__datePopover--open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
 }
 
 .appShell__nav {
+  --nav-pill-left: 0px;
+  --nav-pill-width: 0px;
+  position: relative;
   display: none;
   align-items: center;
   gap: 0.25rem;
@@ -75,7 +92,31 @@
   }
 }
 
+.appShell__navPill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  height: 100%;
+  width: var(--nav-pill-width);
+  border-radius: var(--radius-pill);
+  background: var(--color-navy);
+  transform: translateX(var(--nav-pill-left));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.appShell__nav--ready .appShell__navPill {
+  opacity: 1;
+  transition:
+    transform var(--motion-base) var(--ease-out),
+    width var(--motion-base) var(--ease-out),
+    opacity var(--motion-fast) var(--ease-out);
+}
+
 .appShell__navItem {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -85,16 +126,21 @@
   text-decoration: none;
   font-size: 0.92rem;
   font-weight: 600;
+  transition: color var(--motion-fast) var(--ease-out);
 }
 
 .appShell__navItem--active {
-  background: var(--color-navy);
   color: #fff;
 }
 
 .appShell__navIcon {
   width: 1.05rem;
   height: 1.05rem;
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+
+.appShell__navItem--active .appShell__navIcon {
+  transform: scale(1.05);
 }
 
 .appShell__headerAction {
@@ -102,6 +148,7 @@
 }
 
 .appShell__main {
+  position: relative;
   width: 100%;
   margin: 0 auto;
   padding: 0.5rem var(--space-page) 1.5rem;
@@ -120,16 +167,27 @@
   max-width: 36rem;
 }
 
-.appShell__today,
-.appShell__calendar,
-.appShell__insights {
-  display: none;
+.appShell__pane {
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.appShell--today .appShell__today,
-.appShell--calendar .appShell__calendar,
-.appShell--insights .appShell__insights {
-  display: block;
+.appShell__pane--active {
+  visibility: visible;
+  position: relative;
+  height: auto;
+  overflow: visible;
+  opacity: 1;
+  pointer-events: auto;
+  animation: appShellPaneEnter var(--motion-enter) var(--ease-out);
 }
 
 .appShell__calendar {
@@ -145,5 +203,17 @@
 
   @media (min-width: 768px) {
     padding: 1.75rem 1.5rem 2rem;
+  }
+}
+
+@keyframes appShellPaneEnter {
+  from {
+    opacity: 0;
+    transform: translateY(0.375rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

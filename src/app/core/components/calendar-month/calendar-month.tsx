@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 import {
   decorateDay,
   getMonthGrid,
@@ -28,6 +30,8 @@ type CalendarMonthProps = {
   variant?: "default" | "sm";
 };
 
+type SlideDirection = "forward" | "back";
+
 export function CalendarMonth({
   monthKey,
   today,
@@ -43,6 +47,24 @@ export function CalendarMonth({
   const days = getMonthGrid(year, month).map((date) =>
     decorateDay(date, month, today, selectedDate, periodDates, predictedDates),
   );
+  const previousMonthRef = useRef(monthKey);
+  const [direction, setDirection] = useState<SlideDirection>("forward");
+
+  useEffect(() => {
+    if (monthKey === previousMonthRef.current) return;
+    setDirection(monthKey > previousMonthRef.current ? "forward" : "back");
+    previousMonthRef.current = monthKey;
+  }, [monthKey]);
+
+  function handlePrev() {
+    setDirection("back");
+    onPrevMonth();
+  }
+
+  function handleNext() {
+    setDirection("forward");
+    onNextMonth();
+  }
 
   return (
     <section
@@ -55,16 +77,28 @@ export function CalendarMonth({
         <button
           type="button"
           className={styles.calendarMonth__nav}
-          onClick={onPrevMonth}
+          onClick={handlePrev}
           aria-label="Mes anterior"
         >
           <ChevronLeftIcon />
         </button>
-        <h1 className={styles.calendarMonth__title}>{formatMonthYear(monthKey)}</h1>
+        <div className={styles.calendarMonth__titleViewport}>
+          <h1
+            key={monthKey}
+            className={cx(
+              styles.calendarMonth__title,
+              direction === "forward"
+                ? styles["calendarMonth__title--forward"]
+                : styles["calendarMonth__title--back"],
+            )}
+          >
+            {formatMonthYear(monthKey)}
+          </h1>
+        </div>
         <button
           type="button"
           className={styles.calendarMonth__nav}
-          onClick={onNextMonth}
+          onClick={handleNext}
           aria-label="Mes siguiente"
         >
           <ChevronRightIcon />
@@ -75,20 +109,30 @@ export function CalendarMonth({
           <span key={label}>{label}</span>
         ))}
       </div>
-      <div className={styles.calendarMonth__grid}>
-        {days.map((day) => (
-          <button
-            key={day.date}
-            type="button"
-            className={dayClassName(day)}
-            onClick={() => onSelectDate(day.date)}
-            aria-label={formatLongDate(day.date)}
-            aria-current={day.isToday ? "date" : undefined}
-            aria-pressed={day.isSelected}
-          >
-            <span className={styles.calendarMonth__num}>{day.day}</span>
-          </button>
-        ))}
+      <div className={styles.calendarMonth__body}>
+        <div
+          key={monthKey}
+          className={cx(
+            styles.calendarMonth__grid,
+            direction === "forward"
+              ? styles["calendarMonth__grid--forward"]
+              : styles["calendarMonth__grid--back"],
+          )}
+        >
+          {days.map((day) => (
+            <button
+              key={day.date}
+              type="button"
+              className={dayClassName(day)}
+              onClick={() => onSelectDate(day.date)}
+              aria-label={formatLongDate(day.date)}
+              aria-current={day.isToday ? "date" : undefined}
+              aria-pressed={day.isSelected}
+            >
+              <span className={styles.calendarMonth__num}>{day.day}</span>
+            </button>
+          ))}
+        </div>
       </div>
     </section>
   );

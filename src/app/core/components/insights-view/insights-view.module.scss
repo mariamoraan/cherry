@@ -68,6 +68,11 @@
   list-style: none;
 }
 
+.insightsView__sentinel {
+  height: 1px;
+  list-style: none;
+}
+
 .insightsView__row {
   display: grid;
   grid-template-columns: minmax(6.5rem, 8.5rem) minmax(0, 1fr) 2.6rem;

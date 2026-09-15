@@ -1,5 +1,7 @@
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 
+import { buildCycleSummary, type CycleSummary } from "@/core/cycle/summary";
+
 import {
   normalizeFlow,
   normalizeMood,
@@ -52,6 +54,13 @@ function createLog(input: CycleLogInput, existing?: CycleLog): CycleLog {
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
   };
+}
+
+export async function getLocalCycleSummary(
+  today: string,
+): Promise<CycleSummary> {
+  const logs = await getLocalCycleLogs();
+  return buildCycleSummary(logs, today);
 }
 
 export async function getLocalCycleLogs(

@@ -10,7 +10,9 @@ import {
 } from "react";
 
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
+import { paneFromPath } from "@/core/components/app-shell/app-shell";
 import { addDays, addMonths, startOfMonth, toLocalDateKey } from "@/core/cycle/dates";
 import { useCycleView } from "@/core/cycle/use-cycle-view";
 
@@ -37,6 +39,7 @@ const TrackerContext = createContext<TrackerContextValue | null>(null);
 
 export function TrackerProvider({ children }: { children: ReactNode }) {
   const { data: session } = useSession();
+  const pane = paneFromPath(usePathname());
   const [selectedDate, setSelectedDate] = useState(toLocalDateKey);
   const [visibleMonth, setVisibleMonthState] = useState(() =>
     startOfMonth(toLocalDateKey()),
@@ -44,7 +47,7 @@ export function TrackerProvider({ children }: { children: ReactNode }) {
   const [pickerMonth, setPickerMonth] = useState(() =>
     startOfMonth(toLocalDateKey()),
   );
-  const view = useCycleView(selectedDate);
+  const view = useCycleView(selectedDate, pane);
 
   const selectDate = useCallback((date: string) => {
     setSelectedDate(date);

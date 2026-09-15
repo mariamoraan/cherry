@@ -1,4 +1,4 @@
-import type { CycleLog, FlowLevel } from "@/core/storage/types";
+import type { FlowLevel } from "@/core/storage/types";
 
 import { addDays, diffDays } from "./dates";
 
@@ -25,7 +25,9 @@ function toRange(dates: string[]): PeriodRange {
   };
 }
 
-export function getPeriodRanges(logs: CycleLog[]): PeriodRange[] {
+export function getPeriodRanges(
+  logs: Array<{ date: string; flow: FlowLevel | null }>,
+): PeriodRange[] {
   const dates = logs
     .filter((log) => isPeriodFlow(log.flow))
     .map((log) => log.date)

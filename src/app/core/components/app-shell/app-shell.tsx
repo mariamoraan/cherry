@@ -18,6 +18,12 @@ import styles from "./app-shell.module.scss";
 
 export type TrackerPane = "today" | "calendar" | "insights";
 
+export function paneFromPath(pathname: string): TrackerPane {
+  if (pathname.startsWith("/insights")) return "insights";
+  if (pathname.startsWith("/calendar")) return "calendar";
+  return "today";
+}
+
 type AppShellProps = {
   pane: TrackerPane;
   formattedDate: string;

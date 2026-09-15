@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useRef } from "react";
 import { usePathname } from "next/navigation";
 
-import { AppShell, type TrackerPane } from "@/core/components/app-shell/app-shell";
+import { AppShell, paneFromPath } from "@/core/components/app-shell/app-shell";
 import { BottomNav } from "@/core/components/bottom-nav/bottom-nav";
 import {
   CalendarScroll,
@@ -28,12 +28,6 @@ import {
 import { getFirstName } from "@/core/cycle/labels";
 
 import styles from "./cycle-tracker.module.scss";
-
-function paneFromPath(pathname: string): TrackerPane {
-  if (pathname.startsWith("/insights")) return "insights";
-  if (pathname.startsWith("/calendar")) return "calendar";
-  return "today";
-}
 
 function buildWeekDays(
   selectedDate: string,
@@ -147,6 +141,7 @@ export function CycleTracker() {
           predictedDates={tracker.predictedDates}
           onSelectDate={tracker.selectDate}
           onVisibleMonthChange={tracker.setVisibleMonth}
+          active={pane === "calendar"}
           scrollRef={calendarScrollRef}
         />
       }
@@ -171,6 +166,7 @@ export function CycleTracker() {
           prediction={tracker.prediction}
           periodDay={tracker.todayPeriodDay}
           isLoading={tracker.isLoading}
+          active={pane === "insights"}
         />
       }
       nav={<BottomNav pane={pane} />}

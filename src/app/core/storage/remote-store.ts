@@ -1,9 +1,11 @@
 import {
   deleteCycleLog,
   getCycleLogs,
+  getCycleSummary,
   migrateLocalLogs,
   upsertCycleLog,
 } from "@/core/actions/cycle-logs";
+import type { CycleSummary } from "@/core/cycle/summary";
 import type { CycleLog, CycleLogInput } from "./types";
 
 export async function getRemoteCycleLogs(
@@ -11,6 +13,12 @@ export async function getRemoteCycleLogs(
   to?: string,
 ): Promise<CycleLog[]> {
   return getCycleLogs(from, to);
+}
+
+export async function getRemoteCycleSummary(
+  today: string,
+): Promise<CycleSummary> {
+  return getCycleSummary(today);
 }
 
 export async function upsertRemoteCycleLog(

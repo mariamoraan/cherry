@@ -2,34 +2,34 @@
 
 import { useMemo } from "react";
 
-import { useCycleLogs } from "@/core/storage/use-cycle-logs";
-
-import { getQueryRange } from "./calendar";
+import type { TrackerPane } from "@/core/components/app-shell/app-shell";
+import { getWeekWindow } from "@/core/cycle/calendar";
 import {
-  getAverageCycleLength,
   getAveragePeriodDays,
   getCycleDay,
   getCycleRows,
   getMaxCycleDays,
-} from "./cycle-stats";
-import { toLocalDateKey } from "./dates";
-import { getPeriodDateSet, getPeriodDay, getPeriodRanges } from "./period-ranges";
+} from "@/core/cycle/cycle-stats";
+import { toLocalDateKey } from "@/core/cycle/dates";
+import { getPeriodDateSet, getPeriodDay } from "@/core/cycle/period-ranges";
 import {
-  getAveragePeriodLength,
   getNextPeriodPrediction,
   getPredictedDateSet,
   shouldShowNextPeriodNotice,
-} from "./prediction";
+} from "@/core/cycle/prediction";
+import { useCycleLogs, useCycleSummary } from "@/core/storage/use-cycle-logs";
 
-export function useCycleView(selectedDate: string) {
+export function useCycleView(selectedDate: string, pane: TrackerPane) {
   const today = useMemo(() => toLocalDateKey(), []);
-  const { from, to } = useMemo(() => getQueryRange(today), [today]);
-  const cycleLogs = useCycleLogs(from, to);
-
-  const ranges = useMemo(
-    () => getPeriodRanges(cycleLogs.logs),
-    [cycleLogs.logs],
+  const { from, to } = useMemo(
+    () => getWeekWindow(selectedDate),
+    [selectedDate],
   );
+  const summaryQuery = useCycleSummary(today);
+  const needsWeekLogs = pane === "today";
+  const cycleLogs = useCycleLogs(from, to, needsWeekLogs);
+
+  const ranges = summaryQuery.summary?.ranges ?? [];
   const periodDates = useMemo(() => getPeriodDateSet(ranges), [ranges]);
   const periodDay = useMemo(
     () => getPeriodDay(ranges, selectedDate),
@@ -47,14 +47,11 @@ export function useCycleView(selectedDate: string) {
     () => getCycleRows(ranges, today),
     [ranges, today],
   );
-  const averageCycleLength = useMemo(
-    () => getAverageCycleLength(cycleRows),
-    [cycleRows],
-  );
-  const averagePeriodLength = useMemo(() => {
-    const fromRows = getAveragePeriodDays(cycleRows);
-    return fromRows ?? getAveragePeriodLength(ranges);
-  }, [cycleRows, ranges]);
+  const averageCycleLength =
+    summaryQuery.summary?.averageCycleLength ?? null;
+  const averagePeriodLength =
+    summaryQuery.summary?.averagePeriodLength ??
+    getAveragePeriodDays(cycleRows);
   const maxCycleDays = useMemo(() => getMaxCycleDays(cycleRows), [cycleRows]);
   const prediction = useMemo(
     () =>
@@ -76,8 +73,12 @@ export function useCycleView(selectedDate: string) {
     [cycleLogs.logs, selectedDate],
   );
 
+  const isLoading =
+    summaryQuery.isLoading || (needsWeekLogs && cycleLogs.isLoading);
+
   return {
     ...cycleLogs,
+    isLoading,
     today,
     ranges,
     periodDates,

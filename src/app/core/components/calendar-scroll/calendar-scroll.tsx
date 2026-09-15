@@ -39,12 +39,14 @@ type CalendarScrollProps = {
   predictedDates: Set<string>;
   onSelectDate: (date: string) => void;
   onVisibleMonthChange: (monthKey: string) => void;
+  active: boolean;
   scrollRef?: Ref<CalendarScrollHandle | null>;
 };
 
-const INITIAL_BACK = 12;
-const INITIAL_FORWARD = 8;
-const EXTEND_BY = 4;
+const INITIAL_BACK = 1;
+const INITIAL_FORWARD = 1;
+const EXTEND_BY = 1;
+const EXTEND_COOLDOWN_MS = 450;
 
 function buildMonthKeys(center: string, back: number, forward: number): string[] {
   const origin = startOfMonth(center);
@@ -60,6 +62,7 @@ export function CalendarScroll({
   predictedDates,
   onSelectDate,
   onVisibleMonthChange,
+  active,
   scrollRef,
 }: CalendarScrollProps) {
   const todayMonth = startOfMonth(today);
@@ -70,10 +73,11 @@ export function CalendarScroll({
     [todayMonth, back, forward],
   );
   const monthRefs = useRef(new Map<string, HTMLElement>());
-  const sentinelStartRef = useRef<HTMLDivElement | null>(null);
-  const sentinelEndRef = useRef<HTMLDivElement | null>(null);
-  const didInitialScroll = useRef(false);
+  const readyRef = useRef(false);
+  const extendingRef = useRef(false);
   const prevBackRef = useRef(back);
+  const onVisibleMonthChangeRef = useRef(onVisibleMonthChange);
+  onVisibleMonthChangeRef.current = onVisibleMonthChange;
 
   useImperativeHandle(scrollRef, () => ({
     scrollToMonth: (monthKey: string) => {
@@ -83,12 +87,25 @@ export function CalendarScroll({
   }));
 
   useEffect(() => {
-    if (didInitialScroll.current) return;
+    if (active) return;
+    readyRef.current = false;
+    extendingRef.current = false;
+    setBack(INITIAL_BACK);
+    setForward(INITIAL_FORWARD);
+    prevBackRef.current = INITIAL_BACK;
+  }, [active]);
+
+  useLayoutEffect(() => {
+    if (!active) return;
     const node = monthRefs.current.get(todayMonth);
     if (!node) return;
     node.scrollIntoView({ block: "start" });
-    didInitialScroll.current = true;
-  }, [todayMonth, monthKeys]);
+    readyRef.current = false;
+    const timer = window.setTimeout(() => {
+      readyRef.current = true;
+    }, EXTEND_COOLDOWN_MS);
+    return () => window.clearTimeout(timer);
+  }, [active, todayMonth]);
 
   useLayoutEffect(() => {
     if (back <= prevBackRef.current) {
@@ -97,9 +114,8 @@ export function CalendarScroll({
     }
     const added = back - prevBackRef.current;
     prevBackRef.current = back;
-    const firstNew = monthKeys[0];
     const anchor = monthKeys[added];
-    if (!firstNew || !anchor) return;
+    if (!anchor) return;
     const node = monthRefs.current.get(anchor);
     if (node) {
       node.scrollIntoView({ block: "start" });
@@ -107,13 +123,15 @@ export function CalendarScroll({
   }, [back, monthKeys]);
 
   useEffect(() => {
+    if (!active) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
         const monthKey = visible?.target.getAttribute("data-month");
-        if (monthKey) onVisibleMonthChange(monthKey);
+        if (monthKey) onVisibleMonthChangeRef.current(monthKey);
       },
       {
         root: null,
@@ -127,36 +145,39 @@ export function CalendarScroll({
     }
 
     return () => observer.disconnect();
-  }, [monthKeys, onVisibleMonthChange]);
+  }, [active, monthKeys]);
 
   useEffect(() => {
-    const start = sentinelStartRef.current;
-    const end = sentinelEndRef.current;
-    if (!start || !end) return;
+    if (!active) return;
 
-    let locked = false;
+    const onScroll = () => {
+      if (!readyRef.current || extendingRef.current) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (locked) return;
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          locked = true;
-          if (entry.target === start) {
-            setBack((value) => value + EXTEND_BY);
-          } else if (entry.target === end) {
-            setForward((value) => value + EXTEND_BY);
-          }
-          break;
-        }
-      },
-      { rootMargin: "320px 0px", threshold: 0 },
-    );
+      const scrollY = window.scrollY;
+      const maxScroll =
+        document.documentElement.scrollHeight - window.innerHeight;
 
-    observer.observe(start);
-    observer.observe(end);
-    return () => observer.disconnect();
-  }, [monthKeys]);
+      if (scrollY <= 64) {
+        extendingRef.current = true;
+        setBack((value) => value + EXTEND_BY);
+        window.setTimeout(() => {
+          extendingRef.current = false;
+        }, EXTEND_COOLDOWN_MS);
+        return;
+      }
+
+      if (maxScroll > 0 && scrollY >= maxScroll - 64) {
+        extendingRef.current = true;
+        setForward((value) => value + EXTEND_BY);
+        window.setTimeout(() => {
+          extendingRef.current = false;
+        }, EXTEND_COOLDOWN_MS);
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [active]);
 
   const setMonthRef = useCallback((monthKey: string, node: HTMLElement | null) => {
     if (node) monthRefs.current.set(monthKey, node);
@@ -170,8 +191,6 @@ export function CalendarScroll({
           <span key={label}>{label}</span>
         ))}
       </div>
-
-      <div ref={sentinelStartRef} className={styles.calendarScroll__sentinel} />
 
       <div className={styles.calendarScroll__months}>
         {monthKeys.map((monthKey) => {
@@ -225,8 +244,6 @@ export function CalendarScroll({
           );
         })}
       </div>
-
-      <div ref={sentinelEndRef} className={styles.calendarScroll__sentinel} />
     </div>
   );
 }

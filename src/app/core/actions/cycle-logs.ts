@@ -1,8 +1,10 @@
 "use server";
 
 import { auth } from "@/auth";
+import { buildCycleSummary, type CycleSummary } from "@/core/cycle/summary";
 import { db } from "@/core/lib/db";
 import {
+  FLOW_LEVELS,
   MOODS,
   SYMPTOMS,
   normalizeFlow,
@@ -104,6 +106,27 @@ export async function getCycleLogs(
   });
 
   return records.map(toCycleLog);
+}
+
+export async function getCycleSummary(today: string): Promise<CycleSummary> {
+  const userId = await requireUserId();
+
+  const records = await db.cycleLog.findMany({
+    where: {
+      userId,
+      flow: { in: [...FLOW_LEVELS] },
+    },
+    select: { date: true, flow: true },
+    orderBy: { date: "asc" },
+  });
+
+  return buildCycleSummary(
+    records.map((record) => ({
+      date: toDateKey(record.date),
+      flow: normalizeFlow(record.flow),
+    })),
+    today,
+  );
 }
 
 export async function upsertCycleLog(input: CycleLogInput): Promise<CycleLog> {

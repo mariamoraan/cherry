@@ -36,6 +36,7 @@ export function MigrateOnLogin() {
             `${result.migrated} registro${result.migrated === 1 ? "" : "s"} sincronizado${result.migrated === 1 ? "" : "s"} con tu cuenta.`,
           );
           await queryClient.invalidateQueries({ queryKey: ["cycle-logs"] });
+          await queryClient.invalidateQueries({ queryKey: ["cycle-summary"] });
         }
       } catch {
         if (!cancelled) {

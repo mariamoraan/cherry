@@ -72,10 +72,18 @@ export function decorateDay(
   };
 }
 
-export function getQueryRange(today: string): { from: string; to: string } {
-  const origin = startOfMonth(today);
+export function getWeekWindow(selectedDate: string): { from: string; to: string } {
+  const weekStart = startOfWeek(selectedDate);
   return {
-    from: addMonths(origin, -12),
-    to: addDays(addMonths(origin, 3), -1),
+    from: addDays(weekStart, -7),
+    to: addDays(weekStart, 20),
+  };
+}
+
+export function getMonthBounds(monthKey: string): { from: string; to: string } {
+  const from = startOfMonth(monthKey);
+  return {
+    from,
+    to: addDays(addMonths(from, 1), -1),
   };
 }

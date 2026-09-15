@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 import type { CycleRow } from "@/core/cycle/cycle-stats";
 import { formatDateRange } from "@/core/cycle/dates";
 import {
@@ -18,7 +20,11 @@ type InsightsViewProps = {
   prediction: PeriodPrediction | null;
   periodDay: number | null;
   isLoading: boolean;
+  active: boolean;
 };
+
+const INITIAL_VISIBLE = 12;
+const LOAD_MORE = 8;
 
 export function InsightsView({
   rows,
@@ -28,8 +34,31 @@ export function InsightsView({
   prediction,
   periodDay,
   isLoading,
+  active,
 }: InsightsViewProps) {
   const headline = formatInsightsPredictionHeadline(prediction, periodDay);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const sentinelRef = useRef<HTMLLIElement | null>(null);
+  const visibleRows = rows.slice(0, visibleCount);
+  const hasMore = visibleCount < rows.length;
+
+  useEffect(() => {
+    if (!active || !hasMore) return;
+    const node = sentinelRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisibleCount((count) => Math.min(rows.length, count + LOAD_MORE));
+        }
+      },
+      { rootMargin: "160px 0px", threshold: 0 },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [active, hasMore, rows.length, visibleCount]);
 
   return (
     <div className={styles.insightsView}>
@@ -62,7 +91,7 @@ export function InsightsView({
           </p>
         ) : (
           <ul className={styles.insightsView__list}>
-            {rows.map((row, index) => (
+            {visibleRows.map((row, index) => (
               <li
                 key={row.start}
                 className={cx(
@@ -96,6 +125,13 @@ export function InsightsView({
                 <span className={styles.insightsView__days}>{row.cycleDays} d</span>
               </li>
             ))}
+            {hasMore ? (
+              <li
+                ref={sentinelRef}
+                className={styles.insightsView__sentinel}
+                aria-hidden="true"
+              />
+            ) : null}
           </ul>
         )}
       </section>

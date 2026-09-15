@@ -43,10 +43,11 @@ type CalendarScrollProps = {
   scrollRef?: Ref<CalendarScrollHandle | null>;
 };
 
-const INITIAL_BACK = 1;
-const INITIAL_FORWARD = 1;
-const EXTEND_BY = 1;
-const EXTEND_COOLDOWN_MS = 450;
+const INITIAL_BACK = 2;
+const INITIAL_FORWARD = 2;
+const EXTEND_BY = 2;
+/** Prefetch when sentinel is within this distance of the viewport. */
+const SENTINEL_ROOT_MARGIN = "280px 0px";
 
 function buildMonthKeys(center: string, back: number, forward: number): string[] {
   const origin = startOfMonth(center);
@@ -68,13 +69,15 @@ export function CalendarScroll({
   const todayMonth = startOfMonth(today);
   const [back, setBack] = useState(INITIAL_BACK);
   const [forward, setForward] = useState(INITIAL_FORWARD);
+  const [ready, setReady] = useState(false);
   const monthKeys = useMemo(
     () => buildMonthKeys(todayMonth, back, forward),
     [todayMonth, back, forward],
   );
   const monthRefs = useRef(new Map<string, HTMLElement>());
-  const readyRef = useRef(false);
-  const extendingRef = useRef(false);
+  const topSentinelRef = useRef<HTMLDivElement | null>(null);
+  const bottomSentinelRef = useRef<HTMLDivElement | null>(null);
+  const extendingRef = useRef<"back" | "forward" | null>(null);
   const prevBackRef = useRef(back);
   const onVisibleMonthChangeRef = useRef(onVisibleMonthChange);
   onVisibleMonthChangeRef.current = onVisibleMonthChange;
@@ -88,8 +91,8 @@ export function CalendarScroll({
 
   useEffect(() => {
     if (active) return;
-    readyRef.current = false;
-    extendingRef.current = false;
+    extendingRef.current = null;
+    setReady(false);
     setBack(INITIAL_BACK);
     setForward(INITIAL_FORWARD);
     prevBackRef.current = INITIAL_BACK;
@@ -100,10 +103,11 @@ export function CalendarScroll({
     const node = monthRefs.current.get(todayMonth);
     if (!node) return;
     node.scrollIntoView({ block: "start" });
-    readyRef.current = false;
+    extendingRef.current = null;
+    setReady(false);
     const timer = window.setTimeout(() => {
-      readyRef.current = true;
-    }, EXTEND_COOLDOWN_MS);
+      setReady(true);
+    }, 200);
     return () => window.clearTimeout(timer);
   }, [active, todayMonth]);
 
@@ -148,36 +152,48 @@ export function CalendarScroll({
   }, [active, monthKeys]);
 
   useEffect(() => {
+    if (!active || !ready) return;
+
+    const top = topSentinelRef.current;
+    const bottom = bottomSentinelRef.current;
+    if (!top || !bottom) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+
+          if (entry.target === top && extendingRef.current !== "back") {
+            extendingRef.current = "back";
+            setBack((value) => value + EXTEND_BY);
+          } else if (
+            entry.target === bottom &&
+            extendingRef.current !== "forward"
+          ) {
+            extendingRef.current = "forward";
+            setForward((value) => value + EXTEND_BY);
+          }
+        }
+      },
+      {
+        root: null,
+        rootMargin: SENTINEL_ROOT_MARGIN,
+        threshold: 0,
+      },
+    );
+
+    observer.observe(top);
+    observer.observe(bottom);
+
+    return () => observer.disconnect();
+  }, [active, ready, monthKeys]);
+
+  // After months render, release the extend lock so a still-visible sentinel
+  // can fire again when the observer reconnects on the next monthKeys change.
+  useLayoutEffect(() => {
     if (!active) return;
-
-    const onScroll = () => {
-      if (!readyRef.current || extendingRef.current) return;
-
-      const scrollY = window.scrollY;
-      const maxScroll =
-        document.documentElement.scrollHeight - window.innerHeight;
-
-      if (scrollY <= 64) {
-        extendingRef.current = true;
-        setBack((value) => value + EXTEND_BY);
-        window.setTimeout(() => {
-          extendingRef.current = false;
-        }, EXTEND_COOLDOWN_MS);
-        return;
-      }
-
-      if (maxScroll > 0 && scrollY >= maxScroll - 64) {
-        extendingRef.current = true;
-        setForward((value) => value + EXTEND_BY);
-        window.setTimeout(() => {
-          extendingRef.current = false;
-        }, EXTEND_COOLDOWN_MS);
-      }
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [active]);
+    extendingRef.current = null;
+  }, [active, monthKeys]);
 
   const setMonthRef = useCallback((monthKey: string, node: HTMLElement | null) => {
     if (node) monthRefs.current.set(monthKey, node);
@@ -193,6 +209,12 @@ export function CalendarScroll({
       </div>
 
       <div className={styles.calendarScroll__months}>
+        <div
+          ref={topSentinelRef}
+          className={styles.calendarScroll__sentinel}
+          aria-hidden="true"
+        />
+
         {monthKeys.map((monthKey) => {
           const { year, month } = splitDateKey(monthKey);
           const days = getMonthGrid(year, month).map((date) =>
@@ -243,6 +265,12 @@ export function CalendarScroll({
             </section>
           );
         })}
+
+        <div
+          ref={bottomSentinelRef}
+          className={styles.calendarScroll__sentinel}
+          aria-hidden="true"
+        />
       </div>
     </div>
   );
